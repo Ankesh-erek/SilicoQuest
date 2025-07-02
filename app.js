@@ -238,6 +238,9 @@ class SilicoQuestApp {
             case 'furnace_interior':
                 this.createFurnaceInterior(stageContent);
                 break;
+            case 'control_panel':
+                this.createControlPanel(stageContent);
+                break;
             default:
                 this.createDefaultVisual(stageContent, visualType);
         }
@@ -305,6 +308,57 @@ class SilicoQuestApp {
             </div>
         `;
         container.appendChild(interior);
+    }
+
+    createControlPanel(container) {
+        const panel = document.createElement('div');
+        panel.innerHTML = `
+            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #2d3748, #4a5568); border-radius: 15px; position: relative; padding: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);">
+                <div style="display: flex; justify-content: space-around; align-items: center; height: 100%;">
+                    <!-- Temperature Gauge -->
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 60px; height: 80px; background: #1a202c; border-radius: 10px; position: relative; border: 2px solid #4a5568;">
+                            <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; height: 60%; background: linear-gradient(to top, #e53e3e, #ff6b6b); border-radius: 5px; animation: tempGauge 3s infinite;"></div>
+                        </div>
+                        <span style="color: #e2e8f0; font-size: 0.8rem; margin-top: 5px;">TEMP</span>
+                    </div>
+                    
+                    <!-- Pressure Gauge -->
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 60px; height: 60px; border: 3px solid #4a5568; border-radius: 50%; position: relative; background: #1a202c;">
+                            <div style="position: absolute; top: 50%; left: 50%; width: 2px; height: 20px; background: #48bb78; transform-origin: bottom; transform: translate(-50%, -100%) rotate(45deg); animation: pressureNeedle 2s infinite;"></div>
+                        </div>
+                        <span style="color: #e2e8f0; font-size: 0.8rem; margin-top: 5px;">PRESSURE</span>
+                    </div>
+                    
+                    <!-- Control Buttons -->
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div style="width: 40px; height: 40px; background: #48bb78; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: controlBlink 1.5s infinite; box-shadow: 0 0 15px rgba(72, 187, 120, 0.5);">
+                            <span style="color: white; font-weight: bold; font-size: 0.8rem;">ON</span>
+                        </div>
+                        <div style="width: 40px; height: 40px; background: #e53e3e; border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0.3;">
+                            <span style="color: white; font-weight: bold; font-size: 0.7rem;">OFF</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Display -->
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div style="width: 80px; height: 40px; background: #1a202c; border: 1px solid #4a5568; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-family: monospace;">
+                            <span style="color: #48bb78; font-size: 0.9rem; animation: statusBlink 2s infinite;">ACTIVE</span>
+                        </div>
+                        <span style="color: #e2e8f0; font-size: 0.8rem; margin-top: 5px;">STATUS</span>
+                    </div>
+                </div>
+                
+                <!-- Warning Lights -->
+                <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+                    <div style="width: 8px; height: 8px; background: #48bb78; border-radius: 50%; animation: warningLight1 1s infinite;"></div>
+                    <div style="width: 8px; height: 8px; background: #ed8936; border-radius: 50%; animation: warningLight2 1.5s infinite;"></div>
+                    <div style="width: 8px; height: 8px; background: #e53e3e; border-radius: 50%; animation: warningLight3 2s infinite;"></div>
+                </div>
+            </div>
+        `;
+        container.appendChild(panel);
     }
 
     createDefaultVisual(container, visualType) {
@@ -407,8 +461,10 @@ class SilicoQuestApp {
 
     showGameCompletionMessage(score) {
         const narrationText = document.getElementById('narrationText');
-        narrationText.textContent = `Excellent work! You scored ${score || 0} points! Ready for the next challenge?`;
-        this.silicoCharacter.animate('celebrating');
+        if (!this.taskCompleted) { // Only show message once
+            narrationText.textContent = `Excellent work! You scored ${score || 0} points! Ready for the next challenge?`;
+            this.silicoCharacter.animate('celebrating');
+        }
     }
 
     showTaskIncompletePopup() {
@@ -605,8 +661,13 @@ class SilicoQuestApp {
         const muteBtn = document.getElementById('muteBtn');
         muteBtn.textContent = this.isAudioMuted ? '🔇' : '🔊';
 
-        if (this.isAudioMuted && this.currentAudio) {
-            this.currentAudio.pause();
+        if (this.isAudioMuted) {
+            if (this.currentAudio) {
+                this.currentAudio.pause();
+            }
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+            }
         }
     }
 
@@ -659,6 +720,45 @@ style.textContent = `
     @keyframes melt {
         0%, 100% { transform: scale(1) rotate(0deg); }
         50% { transform: scale(1.2) rotate(180deg); }
+    }
+    
+    @keyframes tempGauge {
+        0% { height: 40%; background: linear-gradient(to top, #4299e1, #63b3ed); }
+        50% { height: 80%; background: linear-gradient(to top, #e53e3e, #ff6b6b); }
+        100% { height: 40%; background: linear-gradient(to top, #4299e1, #63b3ed); }
+    }
+    
+    @keyframes pressureNeedle {
+        0% { transform: translate(-50%, -100%) rotate(-45deg); }
+        50% { transform: translate(-50%, -100%) rotate(45deg); }
+        100% { transform: translate(-50%, -100%) rotate(90deg); }
+    }
+    
+    @keyframes controlBlink {
+        0%, 100% { opacity: 1; box-shadow: 0 0 15px rgba(72, 187, 120, 0.5); }
+        50% { opacity: 0.7; box-shadow: 0 0 25px rgba(72, 187, 120, 0.8); }
+    }
+    
+    @keyframes statusBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+    
+    @keyframes warningLight1 {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+    }
+    
+    @keyframes warningLight2 {
+        0%, 100% { opacity: 0.3; }
+        33% { opacity: 1; }
+        66% { opacity: 0.3; }
+    }
+    
+    @keyframes warningLight3 {
+        0%, 100% { opacity: 0.3; }
+        25% { opacity: 1; }
+        75% { opacity: 0.3; }
     }
 `;
 document.head.appendChild(style);

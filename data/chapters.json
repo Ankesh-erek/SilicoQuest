@@ -120,7 +120,7 @@
       "game": {
         "name": "Wafer Slicer",
         "description": "Slice silicon ingots and polish wafers to perfection",
-        "type": "precision",
+        "type": "slicing",
         "script": "games/wafer-slicer.js"
       }
     },
@@ -242,10 +242,10 @@
         }
       ],
       "game": {
-        "name": "Knowledge Quiz",
-        "description": "Test your understanding of the silicon chip creation process",
-        "type": "quiz",
-        "script": "games/knowledge-quiz.js"
+        "name": "Chip Matching Challenge",
+        "description": "Match silicon chips to the devices they power in our modern world",
+        "type": "matching",
+        "script": "games/chip-matching.js"
       }
     }
   ]

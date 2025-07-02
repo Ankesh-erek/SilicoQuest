@@ -63,9 +63,10 @@ class SilicoCharacter {
         // Reset to normal state
         this.resetCharacter();
         
-        // Occasional blink
+        // Occasional blink and subtle float
         this.animationInterval = setInterval(() => {
             this.blink();
+            this.character.style.transform = `translateY(${Math.sin(Date.now() / 1000) * 3}px)`;
         }, 3000 + Math.random() * 2000);
     }
 
@@ -75,21 +76,20 @@ class SilicoCharacter {
         let talkPhase = 0;
         this.animationInterval = setInterval(() => {
             // Animate mouth for talking
-            if (talkPhase % 2 === 0) {
-                this.mouth.style.transform = 'scaleY(1.5)';
-                this.mouth.style.borderRadius = '0 0 15px 15px';
-            } else {
-                this.mouth.style.transform = 'scaleY(0.8)';
-                this.mouth.style.borderRadius = '0 0 25px 25px';
-            }
+            const scaleY = 1 + Math.sin(talkPhase * 0.5) * 0.5;
+            this.mouth.style.transform = `scaleY(${scaleY})`;
+            this.mouth.style.borderRadius = `0 0 ${15 + Math.sin(talkPhase * 0.5) * 10}px ${15 - Math.sin(talkPhase * 0.5) * 10}px`;
             
             // Occasional blink while talking
             if (Math.random() < 0.1) {
                 this.blink();
             }
             
+            // Subtle bounce while talking
+            this.character.style.transform = `translateY(${Math.sin(Date.now() / 200) * 2}px)`;
+
             talkPhase++;
-        }, 300);
+        }, 150);
     }
 
     excitedAnimation() {
@@ -97,18 +97,18 @@ class SilicoCharacter {
         
         // Make eyes bigger and mouth wider
         this.eyes.forEach(eye => {
-            eye.style.transform = 'scale(1.3)';
+            eye.style.transform = 'scale(1.4)';
             eye.style.background = '#FFD700';
         });
         
-        this.mouth.style.transform = 'scaleX(1.4) scaleY(1.2)';
+        this.mouth.style.transform = 'scaleX(1.5) scaleY(1.3)';
         this.mouth.style.borderColor = '#FFD700';
         
         // Add bouncing effect
         let bouncePhase = 0;
         this.animationInterval = setInterval(() => {
-            const bounce = Math.sin(bouncePhase) * 3;
-            this.character.style.transform = `translateY(${bounce}px)`;
+            const bounce = Math.sin(bouncePhase) * 5;
+            this.character.style.transform = `translateY(${bounce}px) rotate(${Math.sin(bouncePhase * 0.5) * 2}deg)`;
             bouncePhase += 0.3;
         }, 50);
     }
@@ -118,22 +118,23 @@ class SilicoCharacter {
         
         // Happy eyes and big smile
         this.eyes.forEach(eye => {
-            eye.style.transform = 'scale(1.2)';
+            eye.style.transform = 'scale(1.3)';
             eye.style.background = '#48bb78';
         });
         
-        this.mouth.style.transform = 'scaleX(1.6) scaleY(1.4)';
+        this.mouth.style.transform = 'scaleX(1.8) scaleY(1.6)';
         this.mouth.style.borderColor = '#48bb78';
         this.mouth.style.borderWidth = '3px';
         
         // Celebration particles effect
         this.createCelebrationParticles();
         
-        // Wiggle animation
+        // Wiggle and jump animation
         let wigglePhase = 0;
         this.animationInterval = setInterval(() => {
-            const wiggle = Math.sin(wigglePhase) * 5;
-            this.character.style.transform = `rotate(${wiggle}deg) scale(1.1)`;
+            const wiggle = Math.sin(wigglePhase) * 8;
+            const jump = Math.abs(Math.sin(wigglePhase * 0.5)) * -10;
+            this.character.style.transform = `translateY(${jump}px) rotate(${wiggle}deg) scale(1.1)`;
             wigglePhase += 0.4;
         }, 100);
     }
