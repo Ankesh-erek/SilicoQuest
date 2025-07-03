@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilicoQuest: The Rock That Became a Brain</title>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Welcome Popup -->
+    <div id="welcomePopup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h1>🧠 Welcome to SilicoQuest!</h1>
+                <p class="subtitle">The Rock That Became a Brain</p>
+                <div class="welcome-particles">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+            </div>
+            <div class="popup-body">
+                <div class="silico-intro">
+                    <div class="silico-character" id="silicoIntro">
+                        <div class="silico-face">
+                            <div class="silico-eyes">
+                                <div class="eye left"></div>
+                                <div class="eye right"></div>
+                            </div>
+                            <div class="silico-mouth"></div>
+                        </div>
+                    </div>
+                    <div class="speech-bubble">
+                        <p>Hi! I'm Silico, your silicon guide! 🌟</p>
+                        <p>Ready to discover how sand becomes the brain of computers?</p>
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="journey-preview">
+                    <div class="preview-item">
+                        <div class="preview-icon">🏜️</div>
+                        <span>Desert Sand</span>
+                    </div>
+                    <div class="preview-arrow">→</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">💎</div>
+                        <span>Silicon Crystal</span>
+                    </div>
+                    <div class="preview-arrow">→</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">🧠</div>
+                        <span>Computer Brain</span>
+                    </div>
+                </div>
+                <p class="instruction">✨ Click anywhere to begin your amazing journey! ✨</p>
+            </div>
+            <div class="popup-footer">
+                <p class="credits">🔬 Part of CSIR Jigyasa Science Outreach Program</p>
+                <div class="footer-badges">
+                    <span class="badge">Interactive Learning</span>
+                    <span class="badge">Science Education</span>
+                    <span class="badge">STEM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Progress Tracker -->
+        <div class="progress-tracker">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="chapter-indicators" id="chapterIndicators">
+                <!-- Chapter indicators will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Chapter Container -->
+        <div class="chapter-container" id="chapterContainer">
+            <div class="chapter-header">
+                <h1 id="chapterTitle">Loading...</h1>
+                <div class="chapter-number" id="chapterNumber">Chapter 1</div>
+            </div>
+
+            <!-- Silico Character -->
+            <div class="silico-narrator" id="silicoNarrator">
+                <div class="silico-character">
+                    <div class="silico-face">
+                        <div class="silico-eyes">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                        </div>
+                        <div class="silico-mouth"></div>
+                    </div>
+                </div>
+                <div class="speech-bubble" id="speechBubble">
+                    <p id="narrationText">Welcome to your first chapter!</p>
+                </div>
+            </div>
+
+            <!-- Visual Stage Area -->
+            <div class="visual-stage" id="visualStage">
+                <div class="stage-content" id="stageContent">
+                    <!-- Dynamic visual content will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Game Area -->
+            <div class="game-area" id="gameArea" style="display: none;">
+                <div class="game-container" id="gameContainer">
+                    <!-- Mini-games will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="navigation-controls">
+                <button id="backChapterBtn" class="nav-btn back-btn" style="display: none;">
+                    ← Previous Chapter
+                </button>
+                <button id="nextStageBtn" class="nav-btn next-btn">
+                    Next Stage →
+                </button>
+                <button id="nextChapterBtn" class="nav-btn next-btn" style="display: none;">
+                    Next Chapter →
+                </button>
+            </div>
+        </div>
+
+        <!-- Certificate Modal -->
+        <div id="certificateModal" class="popup-overlay" style="display: none;">
+            <div class="popup-content certificate-content">
+                <div class="certificate" id="certificate">
+                    <div class="certificate-header">
+                        <h1>🎓 Certificate of Completion</h1>
+                        <h2>SilicoQuest: The Rock That Became a Brain</h2>
+                    </div>
+                    <div class="certificate-body">
+                        <p>This certifies that</p>
+                        <h3 id="studentName">[Student Name]</h3>
+                        <p>has successfully completed the SilicoQuest journey</p>
+                        <p>and learned how silicon transforms from sand to the brain of computers</p>
+                        <div class="certificate-date">
+                            <p>Completed on: <span id="completionDate"></span></p>
+                        </div>
+                        <div class="certificate-signature">
+                            <p>CSIR Jigyasa Science Outreach Program</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="certificate-actions">
+                    <input type="text" id="nameInput" placeholder="Enter your name" maxlength="50">
+                    <button id="downloadCertBtn" class="download-btn">📥 Download Certificate</button>
+                    <button id="closeCertBtn" class="close-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button id="muteBtn" class="audio-btn">🔊</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="components/SilicoCharacter.js"></script>
+    <script src="components/ChapterManager.js"></script>
+    <script src="components/GameLoader.js"></script>
+    <script src="components/Certificate.js"></script>
+    <script src="app.js"></script>
+    <script src="fixes.js"></script>
+</body>
+</html>
