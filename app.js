@@ -10,6 +10,9 @@ class SilicoQuestApp {
         this.chapterScores = {};
         this.totalScore = 0;
         this.taskCompleted = false;
+        this.gameSkipped = false;
+        this.currentGameScore = 0;
+        this.popupTimeouts = new Map(); // Track popup timeouts to prevent spam
         
         this.init();
     }
@@ -87,18 +90,43 @@ class SilicoQuestApp {
             this.previousChapter();
         });
 
+        // Skip game button
+        document.getElementById('skipGameBtn').addEventListener('click', () => {
+            this.skipCurrentGame();
+        });
+
         // Audio control
         document.getElementById('muteBtn').addEventListener('click', () => {
             this.toggleAudio();
         });
 
         // Certificate modal
+        document.getElementById('generateCertBtn').addEventListener('click', () => {
+            this.generateCertificate();
+        });
+
         document.getElementById('downloadCertBtn').addEventListener('click', () => {
             this.downloadCertificate();
         });
 
+        document.getElementById('printCertBtn').addEventListener('click', () => {
+            this.printCertificate();
+        });
+
         document.getElementById('closeCertBtn').addEventListener('click', () => {
             this.closeCertificateModal();
+        });
+
+        // Name input for certificate
+        document.getElementById('nameInput').addEventListener('input', (e) => {
+            const generateBtn = document.getElementById('generateCertBtn');
+            if (e.target.value.trim().length > 0) {
+                generateBtn.disabled = false;
+                generateBtn.style.opacity = '1';
+            } else {
+                generateBtn.disabled = true;
+                generateBtn.style.opacity = '0.5';
+            }
         });
 
         // Chapter indicators (will be set up after creation)
@@ -303,38 +331,205 @@ class SilicoQuestApp {
     createDesertScene(container) {
         const scene = document.createElement('div');
         scene.innerHTML = `
-            <div style="width: 100%; height: 200px; background: linear-gradient(to bottom, #87CEEB 0%, #F4A460 70%); border-radius: 10px; position: relative; overflow: hidden;">
-                <div style="position: absolute; bottom: 0; width: 100%; height: 30%; background: #F4A460;"></div>
-                <div style="position: absolute; bottom: 10%; left: 20%; width: 60px; height: 60px; background: #DEB887; border-radius: 50%; animation: bounce 2s infinite;"></div>
-                <div style="position: absolute; top: 20%; right: 30%; width: 40px; height: 40px; background: #FFD700; border-radius: 50%; box-shadow: 0 0 20px #FFD700;"></div>
-                <div style="position: absolute; bottom: 20%; right: 20%; font-size: 2rem;">🏜️</div>
+            <div style="width: 100%; height: 200px; background: linear-gradient(to bottom, #87CEEB 0%, #F4A460 70%); border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <!-- Sky -->
+                <div style="position: absolute; top: 0; width: 100%; height: 70%; background: linear-gradient(to bottom, #87CEEB, #F0E68C);"></div>
+                
+                <!-- Sun -->
+                <div style="position: absolute; top: 15%; right: 20%; width: 50px; height: 50px; background: radial-gradient(circle, #FFD700, #FFA500); border-radius: 50%; box-shadow: 0 0 30px #FFD700; animation: sunGlow 3s infinite;"></div>
+                
+                <!-- Desert dunes -->
+                <div style="position: absolute; bottom: 0; width: 100%; height: 40%; background: #F4A460;"></div>
+                <div style="position: absolute; bottom: 15%; left: 0; width: 40%; height: 25%; background: #DEB887; border-radius: 50% 50% 0 0; transform: scaleX(2);"></div>
+                <div style="position: absolute; bottom: 10%; right: 0; width: 50%; height: 30%; background: #D2B48C; border-radius: 50% 50% 0 0; transform: scaleX(1.8);"></div>
+                
+                <!-- Sand particles -->
+                <div style="position: absolute; bottom: 20%; left: 30%; width: 4px; height: 4px; background: #F4A460; border-radius: 50%; animation: sandFloat 4s infinite;"></div>
+                <div style="position: absolute; bottom: 25%; left: 60%; width: 3px; height: 3px; background: #DEB887; border-radius: 50%; animation: sandFloat 5s infinite 1s;"></div>
+                <div style="position: absolute; bottom: 30%; left: 80%; width: 5px; height: 5px; background: #D2B48C; border-radius: 50%; animation: sandFloat 3s infinite 2s;"></div>
+                
+                <!-- Quartz crystals scattered -->
+                <div style="position: absolute; bottom: 15%; left: 25%; width: 20px; height: 20px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalSparkle 2s infinite;"></div>
+                <div style="position: absolute; bottom: 12%; right: 35%; width: 15px; height: 15px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalSparkle 2s infinite 0.5s;"></div>
+                
+                <!-- Desert text -->
+                <div style="position: absolute; top: 10px; left: 10px; color: #8B4513; font-weight: bold; font-size: 0.9rem; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">🏜️ Silicon Desert</div>
             </div>
         `;
+        
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes sunGlow {
+                0%, 100% { box-shadow: 0 0 30px #FFD700; }
+                50% { box-shadow: 0 0 50px #FFD700, 0 0 70px #FFA500; }
+            }
+            @keyframes sandFloat {
+                0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.7; }
+                25% { transform: translateY(-10px) translateX(5px); opacity: 1; }
+                50% { transform: translateY(-5px) translateX(-3px); opacity: 0.8; }
+                75% { transform: translateY(-15px) translateX(8px); opacity: 0.9; }
+            }
+            @keyframes crystalSparkle {
+                0%, 100% { opacity: 0.8; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 15px rgba(221, 160, 221, 0.8); }
+            }
+        `;
+        document.head.appendChild(style);
         container.appendChild(scene);
     }
 
     createQuartzCrystal(container) {
         const crystal = document.createElement('div');
         crystal.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px;">
-                <div style="width: 80px; height: 120px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: sparkle 2s infinite; box-shadow: 0 0 30px rgba(221, 160, 221, 0.5);"></div>
-                <div style="font-size: 3rem; margin-left: 20px;">💎</div>
+            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: radial-gradient(circle, rgba(230, 230, 250, 0.1), transparent); border-radius: 15px; position: relative;">
+                <!-- Main crystal structure -->
+                <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                    <!-- Central crystal -->
+                    <div style="width: 60px; height: 100px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD, #9370DB); clip-path: polygon(50% 0%, 20% 30%, 0% 100%, 100% 100%, 80% 30%); animation: crystalPulse 3s infinite; box-shadow: 0 0 40px rgba(147, 112, 219, 0.6); position: relative; z-index: 2;">
+                        <!-- Crystal facets -->
+                        <div style="position: absolute; top: 20%; left: 20%; width: 60%; height: 40%; background: rgba(255,255,255,0.4); clip-path: polygon(0% 0%, 100% 20%, 80% 100%, 0% 80%); animation: facetShimmer 2s infinite;"></div>
+                        <div style="position: absolute; top: 40%; right: 10%; width: 30%; height: 50%; background: rgba(255,255,255,0.3); clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 20% 100%); animation: facetShimmer 2s infinite 0.5s;"></div>
+                    </div>
+                    
+                    <!-- Smaller crystals around -->
+                    <div style="position: absolute; left: -30px; top: 20px; width: 25px; height: 40px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 3s infinite 0.5s; opacity: 0.8;"></div>
+                    <div style="position: absolute; right: -25px; top: 30px; width: 20px; height: 35px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 3s infinite 1s; opacity: 0.7;"></div>
+                    <div style="position: absolute; left: -15px; bottom: 10px; width: 18px; height: 30px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 3s infinite 1.5s; opacity: 0.6;"></div>
+                </div>
+                
+                <!-- Energy emanation -->
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 150px; height: 150px; border: 2px solid rgba(147, 112, 219, 0.3); border-radius: 50%; animation: energyRing 4s infinite;"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 1px solid rgba(147, 112, 219, 0.2); border-radius: 50%; animation: energyRing 4s infinite 1s;"></div>
+                
+                <!-- Sparkle effects -->
+                <div style="position: absolute; top: 20%; left: 20%; color: #FFD700; font-size: 1rem; animation: sparkleFloat 2s infinite;">✨</div>
+                <div style="position: absolute; top: 30%; right: 25%; color: #FFD700; font-size: 0.8rem; animation: sparkleFloat 2s infinite 0.7s;">✨</div>
+                <div style="position: absolute; bottom: 25%; left: 30%; color: #FFD700; font-size: 1.2rem; animation: sparkleFloat 2s infinite 1.4s;">✨</div>
+                
+                <!-- Information label -->
+                <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; text-align: center;">
+                    <div>💎 Pure Quartz Crystal</div>
+                    <div style="font-size: 0.7rem; opacity: 0.8;">SiO₂ - Silicon Dioxide</div>
+                </div>
             </div>
         `;
+        
+        // Add crystal-specific animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes crystalPulse {
+                0%, 100% { 
+                    transform: scale(1); 
+                    box-shadow: 0 0 40px rgba(147, 112, 219, 0.6); 
+                }
+                50% { 
+                    transform: scale(1.05); 
+                    box-shadow: 0 0 60px rgba(147, 112, 219, 0.9), 0 0 80px rgba(221, 160, 221, 0.5); 
+                }
+            }
+            @keyframes facetShimmer {
+                0%, 100% { opacity: 0.3; }
+                50% { opacity: 0.7; }
+            }
+            @keyframes energyRing {
+                0% { 
+                    transform: translate(-50%, -50%) scale(0.8); 
+                    opacity: 0.8; 
+                }
+                100% { 
+                    transform: translate(-50%, -50%) scale(1.2); 
+                    opacity: 0; 
+                }
+            }
+            @keyframes sparkleFloat {
+                0%, 100% { 
+                    transform: translateY(0px) rotate(0deg); 
+                    opacity: 0.7; 
+                }
+                50% { 
+                    transform: translateY(-10px) rotate(180deg); 
+                    opacity: 1; 
+                }
+            }
+        `;
+        document.head.appendChild(style);
         container.appendChild(crystal);
     }
 
     createRockCollection(container) {
         const rocks = document.createElement('div');
         rocks.innerHTML = `
-            <div style="display: flex; justify-content: space-around; align-items: center; height: 200px; flex-wrap: wrap;">
-                <div style="width: 50px; height: 50px; background: #8B4513; border-radius: 50%; margin: 10px;">🪨</div>
-                <div style="width: 60px; height: 60px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); margin: 10px; animation: glow 2s infinite;">💎</div>
-                <div style="width: 45px; height: 45px; background: #696969; border-radius: 50%; margin: 10px;">🪨</div>
-                <div style="width: 55px; height: 55px; background: #A0522D; border-radius: 50%; margin: 10px;">🪨</div>
-                <div style="width: 50px; height: 50px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); margin: 10px; animation: glow 2s infinite;">💎</div>
+            <div style="display: flex; justify-content: space-around; align-items: center; height: 200px; flex-wrap: wrap; background: linear-gradient(135deg, rgba(139, 69, 19, 0.1), rgba(160, 82, 45, 0.1)); border-radius: 15px; padding: 20px; position: relative;">
+                <!-- Ground/surface -->
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to top, #8B4513, transparent); border-radius: 0 0 15px 15px;"></div>
+                
+                <!-- Regular rocks -->
+                <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 45px; height: 45px; background: radial-gradient(circle at 30% 30%, #A0522D, #8B4513); border-radius: 60% 40% 40% 60%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: rockFloat 4s infinite;">
+                        <div style="position: absolute; top: 15%; left: 20%; width: 8px; height: 8px; background: rgba(255,255,255,0.2); border-radius: 50%;"></div>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #8B4513; margin-top: 5px; font-weight: bold;">Sandstone</div>
+                </div>
+                
+                <!-- Quartz crystal 1 -->
+                <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 35px; height: 50px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD, #9370DB); clip-path: polygon(50% 0%, 20% 30%, 0% 100%, 100% 100%, 80% 30%); animation: quartzGlow 2s infinite; box-shadow: 0 0 20px rgba(147, 112, 219, 0.6); position: relative;">
+                        <div style="position: absolute; top: 20%; left: 25%; width: 50%; height: 30%; background: rgba(255,255,255,0.4); clip-path: polygon(0% 0%, 100% 20%, 80% 100%, 0% 80%);"></div>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #9370DB; margin-top: 5px; font-weight: bold;">✨ Quartz</div>
+                </div>
+                
+                <!-- Regular rock 2 -->
+                <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 40px; height: 40px; background: radial-gradient(circle at 40% 20%, #696969, #2F4F4F); border-radius: 50% 60% 40% 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: rockFloat 4s infinite 1s;">
+                        <div style="position: absolute; top: 25%; right: 20%; width: 6px; height: 6px; background: rgba(255,255,255,0.15); border-radius: 50%;"></div>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #696969; margin-top: 5px; font-weight: bold;">Granite</div>
+                </div>
+                
+                <!-- Regular rock 3 -->
+                <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 48px; height: 42px; background: radial-gradient(circle at 25% 35%, #CD853F, #A0522D); border-radius: 40% 60% 50% 40%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: rockFloat 4s infinite 2s;">
+                        <div style="position: absolute; top: 30%; left: 15%; width: 10px; height: 5px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #CD853F; margin-top: 5px; font-weight: bold;">Limestone</div>
+                </div>
+                
+                <!-- Quartz crystal 2 -->
+                <div style="position: relative; display: flex; flex-direction: column; align-items: center;">
+                    <div style="width: 30px; height: 45px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD, #9370DB); clip-path: polygon(50% 0%, 15% 35%, 0% 100%, 100% 100%, 85% 35%); animation: quartzGlow 2s infinite 0.5s; box-shadow: 0 0 20px rgba(147, 112, 219, 0.6); position: relative;">
+                        <div style="position: absolute; top: 25%; right: 20%; width: 40%; height: 25%; background: rgba(255,255,255,0.3); clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 30% 100%);"></div>
+                    </div>
+                    <div style="font-size: 0.7rem; color: #9370DB; margin-top: 5px; font-weight: bold;">✨ Quartz</div>
+                </div>
+                
+                <!-- Instruction text -->
+                <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 10px; font-size: 0.8rem; text-align: center;">
+                    🔍 Find the Quartz Crystals!
+                </div>
             </div>
         `;
+        
+        // Add rock collection animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes rockFloat {
+                0%, 100% { transform: translateY(0px) rotate(0deg); }
+                50% { transform: translateY(-5px) rotate(2deg); }
+            }
+            @keyframes quartzGlow {
+                0%, 100% { 
+                    box-shadow: 0 0 20px rgba(147, 112, 219, 0.6);
+                    transform: scale(1);
+                }
+                50% { 
+                    box-shadow: 0 0 30px rgba(147, 112, 219, 0.9), 0 0 40px rgba(221, 160, 221, 0.5);
+                    transform: scale(1.05);
+                }
+            }
+        `;
+        document.head.appendChild(style);
         container.appendChild(rocks);
     }
 
@@ -1349,10 +1544,128 @@ class SilicoQuestApp {
         }, 5000);
     }
 
+    skipCurrentGame() {
+        if (!this.gameCompleted) {
+            // Show confirmation popup
+            this.showSkipConfirmation(() => {
+                // User confirmed skip
+                this.gameSkipped = true;
+                this.gameCompleted = true;
+                this.currentGameScore = 0; // Set score to 0 for skipped games
+                this.chapterScores[this.currentChapter] = 0;
+                
+                // Hide game area
+                document.getElementById('gameArea').style.display = 'none';
+                
+                // Show skip message
+                this.showPopupMessage('⏭️ Game skipped! Score: 0 points', 'warning', 3000);
+                
+                // Update navigation
+                this.updateNavigationButtons();
+                
+                // Update progress
+                this.updateProgress();
+            });
+        }
+    }
+
+    showSkipConfirmation(onConfirm) {
+        const popup = document.createElement('div');
+        popup.className = 'popup-overlay';
+        popup.innerHTML = `
+            <div class="popup-content" style="max-width: 400px;">
+                <div class="popup-header">
+                    <h2>⏭️ Skip Game?</h2>
+                </div>
+                <div class="popup-body">
+                    <p>Are you sure you want to skip this game?</p>
+                    <p><strong>⚠️ Your score for this chapter will be 0 points.</strong></p>
+                    <p>This will affect your final certification score.</p>
+                </div>
+                <div class="popup-footer" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                    <button id="confirmSkip" class="nav-btn" style="background: var(--secondary-gradient);">Yes, Skip</button>
+                    <button id="cancelSkip" class="nav-btn" style="background: var(--success-gradient);">Continue Playing</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(popup);
+        
+        // Add event listeners
+        document.getElementById('confirmSkip').addEventListener('click', () => {
+            document.body.removeChild(popup);
+            onConfirm();
+        });
+        
+        document.getElementById('cancelSkip').addEventListener('click', () => {
+            document.body.removeChild(popup);
+        });
+        
+        // Close on overlay click
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                document.body.removeChild(popup);
+            }
+        });
+    }
+
+    showPopupMessage(message, type = 'info', duration = 3000) {
+        // Prevent spam by checking if a similar message is already showing
+        const messageKey = `${type}_${message}`;
+        if (this.popupTimeouts.has(messageKey)) {
+            return; // Don't show duplicate messages
+        }
+        
+        const popup = document.createElement('div');
+        popup.className = 'message-popup';
+        
+        const colors = {
+            success: 'var(--warning-gradient)',
+            warning: 'var(--secondary-gradient)',
+            error: 'linear-gradient(135deg, #e53e3e, #c53030)',
+            info: 'var(--success-gradient)'
+        };
+        
+        popup.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${colors[type]};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 2000;
+            animation: slideInRight 0.5s ease-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 300px;
+            word-wrap: break-word;
+        `;
+        popup.textContent = message;
+        document.body.appendChild(popup);
+        
+        // Track this message
+        this.popupTimeouts.set(messageKey, true);
+        
+        // Remove after duration
+        setTimeout(() => {
+            if (popup.parentElement) {
+                popup.style.animation = 'slideOutRight 0.5s ease-in';
+                setTimeout(() => {
+                    if (popup.parentElement) {
+                        document.body.removeChild(popup);
+                    }
+                }, 500);
+            }
+            this.popupTimeouts.delete(messageKey);
+        }, duration);
+    }
+
     updateNavigationButtons() {
         const nextStageBtn = document.getElementById('nextStageBtn');
         const nextChapterBtn = document.getElementById('nextChapterBtn');
         const backChapterBtn = document.getElementById('backChapterBtn');
+        const skipGameBtn = document.getElementById('skipGameBtn');
 
         const currentChapterData = this.chapters.find(ch => ch.chapterNumber === this.currentChapter);
         
@@ -1364,17 +1677,28 @@ class SilicoQuestApp {
             nextStageBtn.style.display = 'block';
             nextStageBtn.textContent = 'Next Stage →';
             nextChapterBtn.style.display = 'none';
+            skipGameBtn.style.display = 'none';
         } else if (!this.gameCompleted && currentChapterData.game) {
             nextStageBtn.style.display = 'block';
             nextStageBtn.textContent = 'Start Game →';
             nextChapterBtn.style.display = 'none';
+            skipGameBtn.style.display = 'none';
         } else if (this.currentChapter < this.chapters.length) {
             nextStageBtn.style.display = 'none';
             nextChapterBtn.style.display = 'block';
+            skipGameBtn.style.display = 'none';
         } else {
             nextStageBtn.style.display = 'block';
             nextStageBtn.textContent = 'Complete Quest →';
             nextChapterBtn.style.display = 'none';
+            skipGameBtn.style.display = 'none';
+        }
+        
+        // Show skip button when game is active
+        if (document.getElementById('gameArea').style.display === 'block' && !this.gameCompleted) {
+            skipGameBtn.style.display = 'block';
+        } else {
+            skipGameBtn.style.display = 'none';
         }
     }
 
@@ -1400,6 +1724,13 @@ class SilicoQuestApp {
     showCompletion() {
         // Show certificate modal
         document.getElementById('certificateModal').style.display = 'flex';
+        
+        // Initialize certificate form
+        document.getElementById('completionDate').textContent = new Date().toLocaleDateString();
+        const generateBtn = document.getElementById('generateCertBtn');
+        generateBtn.disabled = true;
+        generateBtn.style.opacity = '0.5';
+        document.getElementById('nameInput').focus();
         
         // Set completion date and score
         const now = new Date();
@@ -1434,8 +1765,57 @@ class SilicoQuestApp {
         this.certificate.generateCertificate();
     }
 
+    generateCertificate() {
+        const nameInput = document.getElementById('nameInput');
+        const studentName = nameInput.value.trim();
+        
+        if (!studentName) {
+            this.showPopupMessage('Please enter your name first!', 'warning', 3000);
+            nameInput.focus();
+            return;
+        }
+        
+        // Update certificate with student name
+        document.getElementById('studentName').textContent = studentName;
+        document.getElementById('completionDate').textContent = new Date().toLocaleDateString();
+        
+        // Show download and print buttons
+        document.getElementById('downloadCertBtn').style.display = 'inline-block';
+        document.getElementById('printCertBtn').style.display = 'inline-block';
+        document.getElementById('generateCertBtn').style.display = 'none';
+        
+        // Show success message
+        this.showPopupMessage('🎓 Certificate generated successfully!', 'success', 3000);
+    }
+
+    downloadCertificate() {
+        if (this.certificate) {
+            this.certificate.generateCertificate();
+        } else {
+            this.showPopupMessage('Certificate system not available', 'error', 3000);
+        }
+    }
+
+    printCertificate() {
+        if (this.certificate) {
+            this.certificate.printCertificate();
+        } else {
+            // Fallback print functionality
+            window.print();
+        }
+    }
+
     closeCertificateModal() {
         document.getElementById('certificateModal').style.display = 'none';
+        
+        // Reset certificate form
+        document.getElementById('nameInput').value = '';
+        document.getElementById('studentName').textContent = '[Enter your name above]';
+        document.getElementById('generateCertBtn').style.display = 'inline-block';
+        document.getElementById('generateCertBtn').disabled = true;
+        document.getElementById('generateCertBtn').style.opacity = '0.5';
+        document.getElementById('downloadCertBtn').style.display = 'none';
+        document.getElementById('printCertBtn').style.display = 'none';
     }
 
     playAudio(audioSrc) {

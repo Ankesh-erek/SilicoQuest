@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilicoQuest - Test Fixes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .fix-item {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .completed { background: #48bb78; }
+        .in-progress { background: #ed8936; }
+        .pending { background: #e53e3e; }
+        
+        .demo-visual {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-crystal {
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(45deg, #E6E6FA, #DDA0DD, #9370DB);
+            clip-path: polygon(50% 0%, 20% 30%, 0% 100%, 100% 100%, 80% 30%);
+            animation: crystalPulse 3s infinite;
+            box-shadow: 0 0 30px rgba(147, 112, 219, 0.6);
+        }
+        
+        @keyframes crystalPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(147, 112, 219, 0.9); }
+        }
+        
+        .demo-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+        
+        .popup-demo {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideInRight 0.5s ease-out;
+            z-index: 1000;
+            display: none;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 SilicoQuest - Fixes Implementation Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 Fix Status Summary</h2>
+        
+        <div class="fix-item">
+            <strong>1. Visual Alignment & Text Box Issues</strong>
+            <span class="status completed">✅ COMPLETED</span>
+            <p>• Fixed Silico narrator speech bubble positioning</p>
+            <p>• Improved visual stage layout and alignment</p>
+            <p>• Enhanced responsive design for better mobile experience</p>
+        </div>
+        
+        <div class="fix-item">
+            <strong>2. Enhanced Visuals for All Stages</strong>
+            <span class="status completed">✅ COMPLETED</span>
+            <p>• Created detailed desert scene with animated sand particles</p>
+            <p>• Enhanced quartz crystal with facets and energy rings</p>
+            <p>• Improved rock collection with labeled specimens</p>
+            <p>• Added realistic furnace exterior and interior</p>
+            <p>• Created detailed control panel with gauges</p>
+            <div class="demo-visual">
+                <div class="demo-crystal"></div>
+                <div style="margin-left: 20px; color: #4a5568;">
+                    <div>💎 Enhanced Crystal Visual</div>
+                    <div style="font-size: 0.8rem;">With animations & effects</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="fix-item">
+            <strong>3. Skip Game Functionality</strong>
+            <span class="status completed">✅ COMPLETED</span>
+            <p>• Added skip button that appears during games</p>
+            <p>• Confirmation dialog to prevent accidental skips</p>
+            <p>• Score tracking: 0 points for skipped games</p>
+            <p>• Proper score consideration for certification</p>
+            <button class="demo-button" onclick="showSkipDemo()">🎮 Demo Skip Function</button>
+        </div>
+        
+        <div class="fix-item">
+            <strong>4. Fixed Popup Message System</strong>
+            <span class="status completed">✅ COMPLETED</span>
+            <p>• Implemented anti-spam mechanism</p>
+            <p>• Proper timeout management</p>
+            <p>• Smooth slide-in/out animations</p>
+            <p>• Different message types (success, warning, error, info)</p>
+            <button class="demo-button" onclick="showPopupDemo()">💬 Demo Popup System</button>
+        </div>
+        
+        <div class="fix-item">
+            <strong>5. Certificate System Overhaul</strong>
+            <span class="status completed">✅ COMPLETED</span>
+            <p>• Fixed name input functionality</p>
+            <p>• Proper modal alignment and responsive design</p>
+            <p>• Added generate, download, and print options</p>
+            <p>• Improved certificate layout and styling</p>
+            <p>• Better user flow and validation</p>
+            <button class="demo-button" onclick="showCertificateDemo()">🎓 Demo Certificate</button>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 Key Improvements Made</h2>
+        
+        <div class="fix-item">
+            <h3>Visual Enhancements</h3>
+            <ul>
+                <li>Enhanced desert scene with realistic dunes, sun, and floating sand particles</li>
+                <li>Detailed quartz crystals with facets, energy rings, and sparkle effects</li>
+                <li>Improved rock collection with proper labeling and identification</li>
+                <li>Realistic furnace visuals with heat effects and control panels</li>
+                <li>Better alignment between Silico character and speech bubbles</li>
+            </ul>
+        </div>
+        
+        <div class="fix-item">
+            <h3>Functionality Improvements</h3>
+            <ul>
+                <li>Skip game feature with confirmation and score tracking</li>
+                <li>Anti-spam popup system with proper timeout management</li>
+                <li>Enhanced certificate generation with better UX</li>
+                <li>Responsive design improvements for mobile devices</li>
+                <li>Better navigation button management</li>
+            </ul>
+        </div>
+        
+        <div class="fix-item">
+            <h3>User Experience</h3>
+            <ul>
+                <li>Smoother animations and transitions</li>
+                <li>Better visual feedback for user actions</li>
+                <li>Improved accessibility and mobile responsiveness</li>
+                <li>Clear visual hierarchy and information display</li>
+                <li>Professional certificate design suitable for students</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚀 Ready for Testing</h2>
+        <p>All requested fixes have been implemented and are ready for testing. The application now provides:</p>
+        <ul>
+            <li>✅ Properly aligned visuals and text elements</li>
+            <li>✅ Enhanced educational visuals suitable for grades 9-12</li>
+            <li>✅ Skip functionality with proper score tracking</li>
+            <li>✅ Fixed popup message system</li>
+            <li>✅ Fully functional certificate system</li>
+        </ul>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="demo-button" onclick="window.open('index.html', '_blank')" style="font-size: 1.2rem; padding: 15px 30px;">
+                🎮 Launch SilicoQuest
+            </button>
+        </div>
+    </div>
+    
+    <!-- Demo popup -->
+    <div id="demoPopup" class="popup-demo">
+        🎉 Demo popup message - No more spam!
+    </div>
+    
+    <script>
+        function showSkipDemo() {
+            alert('Skip Game Demo:\n\n1. During a game, a "⏭️ Skip Game" button appears\n2. Clicking shows confirmation dialog\n3. If confirmed, game is skipped with 0 score\n4. Score is properly tracked for certification');
+        }
+        
+        function showPopupDemo() {
+            const popup = document.getElementById('demoPopup');
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.animation = 'slideInRight 0.5s ease-out reverse';
+                setTimeout(() => {
+                    popup.style.display = 'none';
+                    popup.style.animation = 'slideInRight 0.5s ease-out';
+                }, 500);
+            }, 2000);
+        }
+        
+        function showCertificateDemo() {
+            alert('Certificate Demo:\n\n1. Enter name in input field\n2. Generate button becomes active\n3. Click to generate certificate\n4. Download PDF or Print options appear\n5. Professional layout suitable for students');
+        }
+    </script>
+</body>
+</html>

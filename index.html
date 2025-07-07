@@ -126,6 +126,9 @@
                 <button id="backChapterBtn" class="nav-btn back-btn" style="display: none;">
                     ← Previous Chapter
                 </button>
+                <button id="skipGameBtn" class="nav-btn skip-btn" style="display: none;">
+                    ⏭️ Skip Game
+                </button>
                 <button id="nextStageBtn" class="nav-btn next-btn">
                     Next Stage →
                 </button>
@@ -138,14 +141,23 @@
         <!-- Certificate Modal -->
         <div id="certificateModal" class="popup-overlay" style="display: none;">
             <div class="popup-content certificate-content">
-                <div class="certificate" id="certificate">
+                <div class="certificate-actions" style="order: 1; margin-bottom: 1rem;">
+                    <input type="text" id="nameInput" placeholder="Enter your name to generate certificate" maxlength="50" style="width: 100%; margin-bottom: 1rem;">
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button id="generateCertBtn" class="download-btn">🎓 Generate Certificate</button>
+                        <button id="downloadCertBtn" class="download-btn" style="display: none;">📥 Download PDF</button>
+                        <button id="printCertBtn" class="download-btn" style="display: none;">🖨️ Print</button>
+                        <button id="closeCertBtn" class="close-btn">Close</button>
+                    </div>
+                </div>
+                <div class="certificate" id="certificate" style="order: 2;">
                     <div class="certificate-header">
                         <h1>🎓 Certificate of Completion</h1>
                         <h2>SilicoQuest: The Rock That Became a Brain</h2>
                     </div>
                     <div class="certificate-body">
                         <p>This certifies that</p>
-                        <h3 id="studentName">[Student Name]</h3>
+                        <h3 id="studentName">[Enter your name above]</h3>
                         <p>has successfully completed the SilicoQuest journey</p>
                         <p>and learned how silicon transforms from sand to the brain of computers</p>
                         <div class="certificate-date">
@@ -155,11 +167,6 @@
                             <p>CSIR Jigyasa Science Outreach Program</p>
                         </div>
                     </div>
-                </div>
-                <div class="certificate-actions">
-                    <input type="text" id="nameInput" placeholder="Enter your name" maxlength="50">
-                    <button id="downloadCertBtn" class="download-btn">📥 Download Certificate</button>
-                    <button id="closeCertBtn" class="close-btn">Close</button>
                 </div>
             </div>
         </div>
