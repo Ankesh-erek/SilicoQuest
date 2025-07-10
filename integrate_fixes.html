@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SilicoQuest Enhanced - Integration Test</title>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .integration-notice {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(79, 172, 254, 0.4);
+            z-index: 1001;
+            font-weight: 600;
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .enhancement-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(72, 187, 120, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 1001;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Integration Notice -->
+    <div class="integration-notice" id="integrationNotice">
+        🚀 Enhanced SilicoQuest Loaded!
+        <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.9;">
+            All fixes and improvements active
+        </div>
+    </div>
+    
+    <!-- Enhancement Indicator -->
+    <div class="enhancement-indicator">
+        ✨ Enhanced Mode
+    </div>
+
+    <!-- Welcome Popup -->
+    <div id="welcomePopup" class="popup-overlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h1>🧠 Welcome to SilicoQuest Enhanced!</h1>
+                <p class="subtitle">The Rock That Became a Brain - Now with Enhanced Features!</p>
+                <div class="welcome-particles">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+            </div>
+            <div class="popup-body">
+                <div class="silico-intro">
+                    <div class="silico-character" id="silicoIntro">
+                        <div class="silico-face">
+                            <div class="silico-eyes">
+                                <div class="eye left"></div>
+                                <div class="eye right"></div>
+                            </div>
+                            <div class="silico-mouth"></div>
+                        </div>
+                    </div>
+                    <div class="speech-bubble">
+                        <p>Hi! I'm Silico, your enhanced silicon guide! 🌟</p>
+                        <p>I'm now more animated, smarter, and ready to help you master silicon!</p>
+                        <div class="enhancement-features">
+                            <div class="feature">✨ Enhanced animations & emotions</div>
+                            <div class="feature">🎮 Improved game algorithms</div>
+                            <div class="feature">🧠 Smarter hints & feedback</div>
+                            <div class="feature">📱 Better mobile experience</div>
+                        </div>
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="journey-preview">
+                    <div class="preview-item">
+                        <div class="preview-icon">🏜️</div>
+                        <span>Enhanced Sorting</span>
+                    </div>
+                    <div class="preview-arrow">→</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">💎</div>
+                        <span>Advanced Crystal Growth</span>
+                    </div>
+                    <div class="preview-arrow">→</div>
+                    <div class="preview-item">
+                        <div class="preview-icon">🧠</div>
+                        <span>Smart Programming</span>
+                    </div>
+                </div>
+                <p class="instruction">✨ Click anywhere to begin your enhanced journey! ✨</p>
+                <div class="enhancement-notice">
+                    <strong>🎯 What's New:</strong>
+                    <ul style="text-align: left; margin: 0.5rem 0; padding-left: 1rem;">
+                        <li>Chapters 3-8 completely redesigned with better algorithms</li>
+                        <li>Enhanced UI with proper container sizing and scrolling</li>
+                        <li>Smarter Silico with emotions, hints, and personality</li>
+                        <li>Adaptive difficulty that adjusts to your skill level</li>
+                        <li>Better mobile and tablet support</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="popup-footer">
+                <p class="credits">🔬 Enhanced for CSIR Jigyasa Science Outreach Program</p>
+                <div class="footer-badges">
+                    <span class="badge">Enhanced Learning</span>
+                    <span class="badge">Smart AI Guide</span>
+                    <span class="badge">Adaptive Difficulty</span>
+                    <span class="badge">Mobile Optimized</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Progress Tracker -->
+        <div class="progress-tracker">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="chapter-indicators" id="chapterIndicators">
+                <!-- Chapter indicators will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Chapter Container -->
+        <div class="chapter-container" id="chapterContainer">
+            <div class="chapter-header">
+                <h1 id="chapterTitle">Loading...</h1>
+                <div class="chapter-number" id="chapterNumber">Chapter 1</div>
+            </div>
+
+            <!-- Enhanced Silico Character -->
+            <div class="silico-narrator" id="silicoNarrator">
+                <div class="silico-character">
+                    <div class="silico-face">
+                        <div class="silico-eyes">
+                            <div class="eye left"></div>
+                            <div class="eye right"></div>
+                        </div>
+                        <div class="silico-mouth"></div>
+                    </div>
+                </div>
+                <div class="speech-bubble" id="speechBubble">
+                    <p id="narrationText">Welcome to your enhanced first chapter!</p>
+                </div>
+            </div>
+
+            <!-- Visual Stage Area -->
+            <div class="visual-stage" id="visualStage">
+                <div class="stage-content" id="stageContent">
+                    <!-- Dynamic visual content will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Enhanced Game Area -->
+            <div class="game-area" id="gameArea" style="display: none;">
+                <div class="game-container" id="gameContainer">
+                    <!-- Enhanced mini-games will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="navigation-controls">
+                <button id="backChapterBtn" class="nav-btn back-btn" style="display: none;">
+                    ← Previous Chapter
+                </button>
+                <button id="skipGameBtn" class="nav-btn skip-btn" style="display: none;">
+                    ⏭️ Skip Game
+                </button>
+                <button id="nextStageBtn" class="nav-btn next-btn">
+                    Next Stage →
+                </button>
+                <button id="nextChapterBtn" class="nav-btn next-btn" style="display: none;">
+                    Next Chapter →
+                </button>
+            </div>
+        </div>
+
+        <!-- Certificate Modal -->
+        <div id="certificateModal" class="popup-overlay" style="display: none;">
+            <div class="popup-content certificate-content">
+                <div class="certificate-actions" style="order: 1; margin-bottom: 1rem;">
+                    <input type="text" id="nameInput" placeholder="Enter your name to generate certificate" maxlength="50" style="width: 100%; margin-bottom: 1rem;">
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button id="generateCertBtn" class="download-btn">🎓 Generate Certificate</button>
+                        <button id="downloadCertBtn" class="download-btn" style="display: none;">📥 Download PDF</button>
+                        <button id="printCertBtn" class="download-btn" style="display: none;">🖨️ Print</button>
+                        <button id="closeCertBtn" class="close-btn">Close</button>
+                    </div>
+                </div>
+                <div class="certificate" id="certificate" style="order: 2;">
+                    <div class="certificate-header">
+                        <h1>🎓 Certificate of Completion</h1>
+                        <h2>SilicoQuest Enhanced: The Rock That Became a Brain</h2>
+                    </div>
+                    <div class="certificate-body">
+                        <p>This certifies that</p>
+                        <h3 id="studentName">[Enter your name above]</h3>
+                        <p>has successfully completed the enhanced SilicoQuest journey</p>
+                        <p>and mastered the transformation from sand to silicon brain</p>
+                        <p>with improved algorithms, enhanced UI, and smart AI guidance</p>
+                        <div class="certificate-date">
+                            <p>Completed on: <span id="completionDate"></span></p>
+                        </div>
+                        <div class="certificate-signature">
+                            <p>Enhanced CSIR Jigyasa Science Outreach Program</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button id="muteBtn" class="audio-btn">🔊</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Original Components (fallback) -->
+    <script src="components/SilicoCharacter.js"></script>
+    <script src="components/ChapterManager.js"></script>
+    <script src="components/GameLoader.js"></script>
+    <script src="components/Certificate.js"></script>
+    
+    <!-- Enhanced Components -->
+    <script src="components/SilicoCharacter_Enhanced.js"></script>
+    <script src="components/GameLoader_Enhanced.js"></script>
+    
+    <!-- Enhanced App -->
+    <script src="app_enhanced.js"></script>
+    
+    <script>
+        // Hide integration notice after 5 seconds
+        setTimeout(() => {
+            const notice = document.getElementById('integrationNotice');
+            if (notice) {
+                notice.style.animation = 'slideOutRight 0.5s ease-in';
+                setTimeout(() => notice.remove(), 500);
+            }
+        }, 5000);
+        
+        // Add enhancement features to welcome popup
+        const enhancementFeatures = document.querySelector('.enhancement-features');
+        if (enhancementFeatures) {
+            enhancementFeatures.style.cssText = `
+                margin: 1rem 0;
+                padding: 1rem;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            `;
+            
+            const features = enhancementFeatures.querySelectorAll('.feature');
+            features.forEach((feature, index) => {
+                feature.style.cssText = `
+                    color: rgba(255, 255, 255, 0.9);
+                    font-size: 0.9rem;
+                    margin: 0.3rem 0;
+                    animation: featureFadeIn 0.5s ease-out ${index * 0.2}s both;
+                `;
+            });
+        }
+        
+        // Add enhancement notice styling
+        const enhancementNotice = document.querySelector('.enhancement-notice');
+        if (enhancementNotice) {
+            enhancementNotice.style.cssText = `
+                margin: 1rem 0;
+                padding: 1rem;
+                background: rgba(72, 187, 120, 0.2);
+                border: 1px solid rgba(72, 187, 120, 0.4);
+                border-radius: 10px;
+                color: rgba(255, 255, 255, 0.95);
+                font-size: 0.9rem;
+            `;
+        }
+        
+        // Add feature fade-in animation
+        const featureStyle = document.createElement('style');
+        featureStyle.textContent = `
+            @keyframes featureFadeIn {
+                from { opacity: 0; transform: translateX(-20px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(featureStyle);
+    </script>
+</body>
+</html>

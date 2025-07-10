@@ -600,19 +600,19 @@ body::before {
 .silico-narrator {
     display: flex;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 1rem;
     animation: slideInLeft 0.8s ease-out;
     flex-shrink: 0;
     width: 100%;
     justify-content: flex-start;
     position: relative;
-    padding: 0 1rem;
+    padding: 0;
 }
 
 .silico-narrator .silico-character {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     flex-shrink: 0;
     position: relative;
     z-index: 2;
@@ -621,15 +621,15 @@ body::before {
 
 .silico-narrator .speech-bubble {
     flex: 1;
-    max-width: calc(100% - 140px);
-    font-size: 1.1rem;
-    line-height: 1.6;
+    max-width: calc(100% - 120px);
+    font-size: 1rem;
+    line-height: 1.5;
     word-break: break-word;
     white-space: normal;
     position: relative;
     z-index: 1;
-    align-self: center;
-    padding: 1.2rem;
+    align-self: flex-start;
+    padding: 1rem;
     background: var(--glass-bg);
     backdrop-filter: blur(15px);
     border: 1px solid var(--glass-border);
@@ -637,14 +637,14 @@ body::before {
     box-shadow: var(--shadow-light);
     color: white;
     font-weight: 500;
-    margin-left: 0.5rem;
+    margin-top: 10px;
 }
 
 .silico-narrator .speech-bubble::before {
     content: '';
     position: absolute;
     left: -12px;
-    top: 30px;
+    top: 20px;
     width: 0;
     height: 0;
     border-top: 12px solid transparent;
@@ -656,7 +656,7 @@ body::before {
     content: '';
     position: absolute;
     left: -10px;
-    top: 30px;
+    top: 20px;
     width: 0;
     height: 0;
     border-top: 12px solid transparent;
@@ -712,17 +712,18 @@ body::before {
     backdrop-filter: blur(15px);
     border: 1px solid var(--glass-border);
     border-radius: var(--border-radius);
-    padding: 1.5rem 2vw;
+    padding: 1.5rem;
     margin-bottom: 0.8rem;
-    flex: 2 1 100%;
-    min-height: 300px;
-    max-height: 45vh;
-    overflow: visible;
+    flex: 1 1 auto;
+    min-height: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
     width: 100%;
     box-sizing: border-box;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
 }
 
@@ -743,7 +744,362 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 1rem;
+    box-sizing: border-box;
+    min-height: 450px;
+}
+
+/* Enhanced Game Styles */
+.game-header {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.score-display {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.game-instructions {
+    background: rgba(72, 187, 120, 0.1);
+    border: 1px solid rgba(72, 187, 120, 0.3);
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: white;
+    font-weight: 500;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.game-instructions p {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+/* Game-specific styles */
+.sorting-game-area,
+.control-game-area,
+.precision-game-area,
+.slicing-game-area,
+.puzzle-game,
+.connection-game,
+.programming-game,
+.matching-game {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sorting-area,
+.furnace-control,
+.crystal-grower,
+.slicing-setup,
+.lithography-setup,
+.circuit-builder,
+.cpu-simulator,
+.matching-setup {
+    flex: 1;
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    min-height: 300px;
+}
+
+/* Enhanced button styles for games */
+.control-btn,
+.slice-btn,
+.test-btn,
+.execute-btn,
+.clear-btn,
+.expose-btn {
+    background: var(--warning-gradient);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+    font-family: 'Poppins', sans-serif;
+}
+
+.control-btn:hover,
+.slice-btn:hover,
+.test-btn:hover,
+.execute-btn:hover,
+.clear-btn:hover,
+.expose-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(67, 233, 123, 0.5);
+}
+
+.control-btn.cool {
+    background: var(--success-gradient);
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+.control-btn.cool:hover {
+    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.5);
+}
+
+.clear-btn {
+    background: var(--secondary-gradient);
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.clear-btn:hover {
+    box-shadow: 0 6px 20px rgba(240, 147, 251, 0.5);
+}
+
+/* Enhanced feedback animations */
+.game-feedback {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    z-index: 1000;
+    animation: feedbackPop 3s ease-in-out;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.game-feedback.success {
+    background: rgba(72, 187, 120, 0.9);
+    color: white;
+    box-shadow: 0 0 30px rgba(72, 187, 120, 0.6);
+}
+
+.game-feedback.error {
+    background: rgba(229, 62, 62, 0.9);
+    color: white;
+    box-shadow: 0 0 30px rgba(229, 62, 62, 0.6);
+}
+
+.game-feedback.warning {
+    background: rgba(237, 137, 54, 0.9);
+    color: white;
+    box-shadow: 0 0 30px rgba(237, 137, 54, 0.6);
+}
+
+.game-feedback.info {
+    background: rgba(66, 153, 225, 0.9);
+    color: white;
+    box-shadow: 0 0 30px rgba(66, 153, 225, 0.6);
+}
+
+@keyframes feedbackPop {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    15% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    20% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    85% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}
+
+/* Enhanced Silico Character animations for different states */
+.silico-character.talking {
+    animation: talkingBounce 0.5s ease-in-out infinite;
+}
+
+.silico-character.excited {
+    animation: excitedSpin 2s ease-in-out infinite;
+}
+
+.silico-character.thinking {
+    animation: thinkingFloat 3s ease-in-out infinite;
+}
+
+.silico-character.celebrating {
+    animation: celebrateJump 1s ease-in-out infinite;
+}
+
+@keyframes talkingBounce {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.05) rotate(1deg);
+    }
+}
+
+@keyframes excitedSpin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    25% {
+        transform: rotate(90deg) scale(1.1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1);
+    }
+    75% {
+        transform: rotate(270deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+@keyframes thinkingFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(-2deg);
+    }
+    33% {
+        transform: translateY(-8px) rotate(1deg);
+    }
+    66% {
+        transform: translateY(-4px) rotate(-1deg);
+    }
+}
+
+@keyframes celebrateJump {
+    0%, 100% {
+        transform: translateY(0px) scale(1);
+    }
+    50% {
+        transform: translateY(-20px) scale(1.2);
+    }
+}
+
+/* Enhanced particle effects */
+.sparkle-effect {
+    position: absolute;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.sparkle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #FFD700;
+    border-radius: 50%;
+    animation: sparkleEffect 1.5s ease-out forwards;
+}
+
+@keyframes sparkleEffect {
+    0% {
+        opacity: 1;
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.5) rotate(180deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0) rotate(360deg);
+    }
+}
+
+/* Enhanced progress indicators */
+.progress-segments {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 200px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.crystal-segment {
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+@keyframes segmentGrow {
+    0% {
+        height: 0;
+        opacity: 0;
+    }
+    100% {
+        height: 15px;
+        opacity: 1;
+    }
+}
+
+/* Enhanced device animations for matching game */
+@keyframes deviceActivate {
+    0% {
+        background: var(--glass-bg);
+        transform: scale(1);
+    }
+    50% {
+        background: linear-gradient(45deg, #48bb78, #38a169);
+        transform: scale(1.1);
+    }
+    100% {
+        background: linear-gradient(45deg, #48bb78, #38a169);
+        transform: scale(1);
+    }
+}
+
+@keyframes deviceShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes phoneLight {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.5); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes gameFlash {
+    0%, 100% { color: #4299e1; }
+    50% { color: #ed8936; }
+}
+
+@keyframes robotMove {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes carDrive {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(3px); }
 }
 
 /* Enhanced Navigation Controls */

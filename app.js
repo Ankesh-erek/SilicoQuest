@@ -1464,7 +1464,16 @@ class SilicoQuestApp {
     }
 
     loadGame(gameData) {
+        // Reset game states
+        this.gameCompleted = false;
+        this.gameSkipped = false;
+        this.taskCompleted = false;
+        
+        // Show game area
         document.getElementById('gameArea').style.display = 'block';
+        
+        // Update navigation to show skip button
+        this.updateNavigationButtons();
         
         // Load the specific game
         this.gameLoader.loadGame(gameData, (completed, score) => {
@@ -1546,41 +1555,52 @@ class SilicoQuestApp {
 
     skipCurrentGame() {
         if (!this.gameCompleted) {
-            // Show confirmation popup
+            // Get current score for this chapter (if any)
+            const currentScore = this.chapterScores[this.currentChapter] || 0;
+            
+            // Show confirmation popup with current score info
             this.showSkipConfirmation(() => {
                 // User confirmed skip
                 this.gameSkipped = true;
                 this.gameCompleted = true;
-                this.currentGameScore = 0; // Set score to 0 for skipped games
-                this.chapterScores[this.currentChapter] = 0;
+                this.taskCompleted = true; // Mark task as completed to allow progression
+                
+                // Keep any existing score, don't reset to 0
+                if (!this.chapterScores[this.currentChapter]) {
+                    this.chapterScores[this.currentChapter] = 0;
+                }
                 
                 // Hide game area
                 document.getElementById('gameArea').style.display = 'none';
                 
-                // Show skip message
-                this.showPopupMessage('⏭️ Game skipped! Score: 0 points', 'warning', 3000);
+                // Show skip message with current score
+                const finalScore = this.chapterScores[this.currentChapter];
+                this.showPopupMessage(`⏭️ Game skipped! Chapter score: ${finalScore} points`, 'warning', 3000);
                 
                 // Update navigation
                 this.updateNavigationButtons();
                 
                 // Update progress
                 this.updateProgress();
-            });
+            }, currentScore);
         }
     }
 
-    showSkipConfirmation(onConfirm) {
+    showSkipConfirmation(onConfirm, currentScore = 0) {
         const popup = document.createElement('div');
         popup.className = 'popup-overlay';
         popup.innerHTML = `
-            <div class="popup-content" style="max-width: 400px;">
+            <div class="popup-content" style="max-width: 450px;">
                 <div class="popup-header">
                     <h2>⏭️ Skip Game?</h2>
                 </div>
                 <div class="popup-body">
                     <p>Are you sure you want to skip this game?</p>
-                    <p><strong>⚠️ Your score for this chapter will be 0 points.</strong></p>
-                    <p>This will affect your final certification score.</p>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
+                        <p><strong>📊 Current Chapter Score: ${currentScore} points</strong></p>
+                        <p style="font-size: 0.9rem; opacity: 0.8;">Your current score will be kept for certification.</p>
+                    </div>
+                    <p style="font-size: 0.9rem;">You can always come back to play this game later!</p>
                 </div>
                 <div class="popup-footer" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
                     <button id="confirmSkip" class="nav-btn" style="background: var(--secondary-gradient);">Yes, Skip</button>
@@ -1694,8 +1714,9 @@ class SilicoQuestApp {
             skipGameBtn.style.display = 'none';
         }
         
-        // Show skip button when game is active
-        if (document.getElementById('gameArea').style.display === 'block' && !this.gameCompleted) {
+        // Show skip button only when game is active and visible
+        const gameArea = document.getElementById('gameArea');
+        if (gameArea && gameArea.style.display === 'block' && !this.gameCompleted && !this.gameSkipped) {
             skipGameBtn.style.display = 'block';
         } else {
             skipGameBtn.style.display = 'none';
