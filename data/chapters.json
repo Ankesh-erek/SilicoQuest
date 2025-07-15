@@ -6,19 +6,19 @@
       "description": "Discover how ordinary sand contains the secret ingredient for computer chips",
       "narration": [
         {
-          "text": "Hi there! I'm Silico, your silicon guide! 🌟 Somewhere in the vast deserts of Earth lies the mind of your next computer...",
+          "text": "Hi there! I'm Silico, your silicon guide! Look down at the ground. What do you see? Just sand? Think again. Hidden inside those tiny grains is something magical — a shiny crystal.",
           "voice": "audio/scene1_1.mp3",
           "visual": "desert_scene",
           "duration": 5000
         },
         {
-          "text": "This shiny crystal you see is quartz - it contains silicon, the most important ingredient of every computer chip on Earth!",
+          "text": "This shiny crystal you see is quartz - And deep inside quartz… lies silicon — the secret ingredient of every computer chip on Earth!",
           "voice": "audio/scene1_2.mp3",
           "visual": "quartz_crystal",
           "duration": 6000
         },
         {
-          "text": "But not all rocks contain pure silicon. Let's learn to identify the right ones! Ready for your first challenge?",
+          "text": "But not all rocks are the same. Some sparkle with potential, others don’t. Can you spot the pure quartz? Let's try your first challenge?",
           "voice": "audio/scene1_3.mp3",
           "visual": "rock_collection",
           "duration": 5000
@@ -37,19 +37,19 @@
       "description": "Learn how raw silicon is purified in massive furnaces",
       "narration": [
         {
-          "text": "Great job finding those quartz crystals! Now we need to extract pure silicon from them. This happens in giant furnaces!",
+          "text": "Great job finding those quartz crystals! But this silicon is still mixed with a lot of junk — like dirt and other elements. Time to clean it up..... This happens in giant furnaces!",
           "voice": "audio/scene2_1.mp3",
           "visual": "furnace_exterior",
           "duration": 5000
         },
         {
-          "text": "The furnace heats up to over 2000°C! That's hot enough to melt copper! We mix the quartz with carbon to create a chemical reaction.",
+          "text": "We use giant furnaces hotter than volcanoes! The furnace heats up to over 2000°C! Imagine fire so intense, it glows bright orange. Inside, we mix quartz with carbon and blast away the bad stuff.",
           "voice": "audio/scene2_2.mp3",
           "visual": "furnace_interior",
           "duration": 6000
         },
         {
-          "text": "Your job is to control the temperature and timing. Too hot or too cold, and the process fails!",
+          "text": "Careful though! If it gets too hot or cool, we mess up the process. Think you can handle the heat and make the world’s purest silicon? Let’s try!",
           "voice": "audio/scene2_3.mp3",
           "visual": "control_panel",
           "duration": 5000
@@ -68,19 +68,19 @@
       "description": "Watch as molten silicon grows into perfect crystal structures",
       "narration": [
         {
-          "text": "Excellent temperature control! Now we have molten silicon. But we need it in perfect crystal form for computer chips.",
+          "text": "Excellent temperature control! Now we have molten silicon. but we need to turn it into a crystal. Not just any crystal — one that's strong, smooth, and smart for computer chips.",
           "voice": "audio/scene3_1.mp3",
           "visual": "molten_silicon",
           "duration": 5000
         },
         {
-          "text": "We use a special process called the Czochralski method. A tiny seed crystal is dipped into molten silicon and slowly pulled up.",
+          "text": "We dip a tiny crystal seed into melted silicon and pull it out slowly while spinning it. It’s like making a magical silicon lollipop!",
           "voice": "audio/scene3_2.mp3",
           "visual": "crystal_growing",
           "duration": 7000
         },
         {
-          "text": "The crystal must rotate at just the right speed while being pulled. Too fast or slow, and the crystal structure breaks!",
+          "text": "Pull too fast — it breaks. Spin too slow — it twists. Get the speed just right, and we grow a perfect crystal rod. Ready to give it a spin?",
           "voice": "audio/scene3_3.mp3",
           "visual": "crystal_rotation",
           "duration": 6000
@@ -99,19 +99,19 @@
       "description": "Cut the crystal into thin wafers - the foundation of all chips",
       "narration": [
         {
-          "text": "Perfect! You've grown a beautiful silicon crystal, called an ingot. Now we need to slice it into thin wafers.",
+          "text": "Perfect! You've grown a beautiful silicon crystal, called an ingot. Now we need to slice your crystal into super thin wafers — like slicing cheese, but much harder!",
           "voice": "audio/scene4_1.mp3",
           "visual": "silicon_ingot",
           "duration": 5000
         },
         {
-          "text": "Each wafer is thinner than a human hair! We use diamond-wire saws because silicon is very hard to cut.",
+          "text": "Now we need to slice your crystal into super thin wafers — like slicing cheese, but much harder!",
           "voice": "audio/scene4_2.mp3",
           "visual": "wafer_slicing",
           "duration": 6000
         },
         {
-          "text": "After cutting, each wafer must be polished to mirror perfection. Even tiny scratches can ruin a computer chip!",
+          "text": "After slicing, we polish them until they shine like mirrors — because even a tiny scratch can ruin everything. Let's slice and shine like pros!",
           "voice": "audio/scene4_3.mp3",
           "visual": "wafer_polishing",
           "duration": 6000
@@ -136,13 +136,13 @@
           "duration": 5000
         },
         {
-          "text": "Logic gates are like tiny switches that can be ON or OFF. We create them by adding special materials to specific areas of the wafer.",
+          "text": "Logic gates are like tiny decision-makers - like tiny switches that say ‘Yes’ or ‘No’, ‘On’ or ‘Off’. That’s how computers think! We create them by adding special materials to specific areas of the wafer.",
           "voice": "audio/scene5_2.mp3",
           "visual": "logic_gates",
           "duration": 7000
         },
         {
-          "text": "Using photolithography, we shine light through masks to create patterns. It's like using stencils, but incredibly precise!",
+          "text": "We use light and patterns — to draw these tiny circuits. Using photolithography, we shine light through masks to create patterns. It's like using stencils, but incredibly precise!",
           "voice": "audio/scene5_3.mp3",
           "visual": "photolithography",
           "duration": 6000
@@ -161,13 +161,13 @@
       "description": "Wire up logic gates to create computational circuits",
       "narration": [
         {
-          "text": "Great work creating those logic gates! Now we need to connect them together to make circuits that can actually compute.",
+          "text": "Great work creating those logic gates! Now that we have the thinking parts, let’s connect them into a real brain! We’ll link ANDs, ORs, and NOTs to make circuits that do math and more!",
           "voice": "audio/scene6_1.mp3",
           "visual": "individual_gates",
           "duration": 5000
         },
         {
-          "text": "When we connect AND, OR, and NOT gates in different ways, we can create an ALU - Arithmetic Logic Unit - the calculator inside every processor!",
+          "text": "This combo of gates creates something powerful — the ALU, or Arithmetic Logic Unit — the part that lets computers calculate inside every processor!",
           "voice": "audio/scene6_2.mp3",
           "visual": "alu_circuit",
           "duration": 7000
@@ -192,13 +192,13 @@
       "description": "Write your first program for the silicon chip you helped create",
       "narration": [
         {
-          "text": "Amazing! You've built a working processor! Now let's program it to solve problems. This is where silicon truly becomes a 'brain'.",
+          "text": "Amazing! You've built a working processor - now it’s time to teach it! That’s called programming. This is where silicon truly becomes a 'brain'.",
           "voice": "audio/scene7_1.mp3",
           "visual": "working_processor",
           "duration": 6000
         },
         {
-          "text": "Programs are just sequences of instructions that tell the processor what to do. Let's start with simple commands like 'add' and 'store'.",
+          "text": "A program is like a recipe. You give step-by-step instructions, and the silicon brain follows them exactly. It's just sequences of instructions that tell the processor what to do. Let's start with simple commands like 'add' and 'store'.",
           "voice": "audio/scene7_2.mp3",
           "visual": "instruction_set",
           "duration": 6000
@@ -223,7 +223,7 @@
       "description": "Celebrate your journey and see how silicon powers our modern world",
       "narration": [
         {
-          "text": "Congratulations! You've completed the incredible journey from sand to silicon brain! Let's see what you've accomplished.",
+          "text": "Congratulations! You did it, genius! From beach sand to a silicon brain — you’ve built the heart of modern technology.",
           "voice": "audio/scene8_1.mp3",
           "visual": "journey_recap",
           "duration": 6000
