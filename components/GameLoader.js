@@ -420,10 +420,19 @@ class GameLoader {
         const gameArea = document.createElement('div');
         gameArea.className = 'precision-game-area';
         gameArea.innerHTML = `
-            <div class="game-instructions">
-                <p>🔬 Simulate the Czochralski method! Balance rotation and pull speed to grow a perfect crystal rod.</p>
+            <div class="game-instructions" id="crystalIntroScreen">
+                <h2>💎 Crystal Grower: Czochralski Challenge</h2>
+                <p>Grow a perfect silicon crystal rod by carefully balancing <b>rotation speed</b> and <b>pull rate</b>!<br><br>
+                <b>Instructions:</b><br>
+                - Use the sliders to set the rotation and pull rate.<br>
+                - Click <b>Grow Segment</b> to grow each segment.<br>
+                - Try to keep both values in the <span style="color:#48bb78;">optimal green zone</span> for perfect growth.<br>
+                - Random temperature fluctuations will challenge you!<br>
+                - Complete all 10 segments for a perfect crystal.<br></p>
+                <button id="startCrystalGameBtn" class="nav-btn next-btn" style="margin-top: 1.5rem; font-size:1.2rem;">Start Growing</button>
+                <button id="showTutorialBtn" class="nav-btn next-btn" style="margin-top: 1rem;">How to Play?</button>
             </div>
-            <div class="crystal-grower">
+            <div class="crystal-grower" id="crystalGameArea" style="display:none;">
                 <div class="crystal-display">
                     <div class="molten-pot">
                         <div class="molten-silicon">🔥</div>
@@ -447,41 +456,130 @@ class GameLoader {
                         <span id="pullValue">50 mm/h</span>
                         <div class="optimal-zone">Optimal: 45-55 mm/h</div>
                     </div>
+                    <div class="control-group">
+                        <label>🌡️ Temperature</label>
+                        <input type="range" id="temperature" min="1550" max="1700" value="1600">
+                        <span id="temperatureValue">1600°C</span>
+                        <div class="optimal-zone">Optimal: 1570-1630°C</div>
+                    </div>
                 </div>
                 <div class="crystal-stats">
                     <div>Segments Grown: <span id="segmentCount">0</span>/10</div>
                     <div>Perfect Segments: <span id="perfectCount">0</span></div>
                 </div>
+                <button id="growSegmentBtn" class="nav-btn next-btn" style="margin-top:1.5rem;font-size:1.1rem;">Grow Segment</button>
+            </div>
+            <div id="tutorialPopup" class="popup-overlay" style="display:none;z-index:2000;">
+                <div class="popup-content" style="max-width:400px;">
+                    <h2 style="margin-bottom:1rem;">How to Play: Crystal Growing</h2>
+                    <ol style="text-align:left;color:white;">
+                        <li>Use the <b>Rotation Speed</b>, <b>Pull Rate</b>, and <b>Temperature</b> sliders to control the crystal growth.</li>
+                        <li>Keep all values in the <span style="color:#48bb78;">optimal green zone</span> for perfect segments.</li>
+                        <li>If values are too high or low, the crystal will grow <span style="color:#e53e3e;">thin</span>, <span style="color:#ed8936;">thick</span>, or <span style="color:#3182ce;">defective</span> and you lose points.</li>
+                        <li>Grow all 10 segments. Try to get as many perfect as possible!</li>
+                        <li>Random temperature events will occur. Adjust quickly!</li>
+                        <li>Watch the feedback and stats below for hints.</li>
+                    </ol>
+                    <button id="closeTutorialBtn" class="nav-btn next-btn" style="margin-top:1rem;">Got it!</button>
+                </div>
             </div>
         `;
 
         this.gameContainer.appendChild(gameArea);
+
+        // Tutorial popup logic
+        const tutorialPopup = gameArea.querySelector('#tutorialPopup');
+        const showTutorialBtn = gameArea.querySelector('#showTutorialBtn');
+        const closeTutorialBtn = gameArea.querySelector('#closeTutorialBtn');
+        showTutorialBtn.onclick = () => { tutorialPopup.style.display = 'flex'; };
+        closeTutorialBtn.onclick = () => { tutorialPopup.style.display = 'none'; };
+
+        // Start button logic
+        const introScreen = gameArea.querySelector('#crystalIntroScreen');
+        const gameAreaDiv = gameArea.querySelector('#crystalGameArea');
+        const startBtn = gameArea.querySelector('#startCrystalGameBtn');
+        startBtn.onclick = () => {
+            introScreen.style.display = 'none';
+            gameAreaDiv.style.display = 'block';
+        };
+
         return this.initCzochralskiGame();
     }
 
+    // Improved and commented: Czochralski Crystal Growing Game logic
     initCzochralskiGame() {
         let segmentsGrown = 0;
         let perfectSegments = 0;
         let gameCompleted = false;
         const targetSegments = 10;
-        
+        let tempEventActive = false;
+        let tempEventTimeout = null;
+        let tempEventValue = 0;
+
+        // Get UI elements
         const rotationSlider = document.getElementById('rotationSpeed');
         const pullSlider = document.getElementById('pullRate');
+        const tempSlider = document.getElementById('temperature');
         const crystalRod = document.getElementById('crystalRod');
         const progressSegments = document.getElementById('progressSegments');
         const growthStatus = document.getElementById('growthStatus');
         const segmentCount = document.getElementById('segmentCount');
         const perfectCount = document.getElementById('perfectCount');
+        const growSegmentBtn = document.getElementById('growSegmentBtn');
+        const gameAreaDiv = document.getElementById('crystalGameArea');
 
-        const growSegment = () => {
+        // Responsive and visually bounded rod
+        crystalRod.style.transition = 'height 0.5s, box-shadow 0.5s, background 0.5s';
+        crystalRod.style.width = '32px';
+        crystalRod.style.margin = '0 auto';
+        crystalRod.style.background = 'linear-gradient(180deg, #E6E6FA 60%, #DDA0DD 100%)';
+        crystalRod.style.borderRadius = '12px';
+        crystalRod.style.boxShadow = '0 0 18px #DDA0DD, 0 0 40px #9370DB inset';
+        crystalRod.style.position = 'relative';
+        crystalRod.style.bottom = '0';
+        crystalRod.style.left = '0';
+        crystalRod.style.right = '0';
+        crystalRod.style.display = 'block';
+        crystalRod.style.maxHeight = '260px';
+        crystalRod.style.minHeight = '0px';
+        crystalRod.style.overflow = 'visible';
+
+        // Helper: Add a segment to the rod visually
+        function addRodSegment(quality) {
+            // Each segment is a div inside the rod, stacked vertically
+            const seg = document.createElement('div');
+            seg.className = `crystal-segment ${quality}`;
+            seg.style.height = '22px';
+            seg.style.width = quality === 'thick' ? '38px' : quality === 'thin' ? '18px' : quality === 'defective' ? '26px' : '28px';
+            seg.style.margin = '0 auto';
+            seg.style.borderRadius = '8px';
+            seg.style.background = quality === 'perfect' ? 'linear-gradient(90deg, #E6E6FA, #DDA0DD, #9370DB)' : quality === 'thick' ? '#8B4513' : quality === 'thin' ? '#696969' : '#3182ce';
+            seg.style.boxShadow = quality === 'perfect' ? '0 0 18px #DDA0DD, 0 0 40px #9370DB inset' : 'none';
+            seg.style.transition = 'width 0.3s, background 0.3s, box-shadow 0.3s';
+            seg.style.position = 'relative';
+            seg.style.animation = quality === 'perfect' ? 'sparkleGrow 1s' : 'segmentGrow 0.5s';
+            // Sparkle effect for perfect
+            if (quality === 'perfect') {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'crystal-sparkle';
+                sparkle.style.cssText = 'position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:1.2rem;pointer-events:none;animation:sparkleAnim 1.2s;';
+                sparkle.textContent = '✨';
+                seg.appendChild(sparkle);
+            }
+            crystalRod.appendChild(seg);
+        }
+
+        // Main game logic: grow a segment
+        function growSegment() {
             if (gameCompleted || segmentsGrown >= targetSegments) return;
 
             const rotation = parseInt(rotationSlider.value);
             const pullRate = parseInt(pullSlider.value);
-            
+            const temperature = parseInt(tempSlider.value) + tempEventValue;
             // Optimal ranges
             const optimalRotation = { min: 40, max: 60 };
             const optimalPull = { min: 45, max: 55 };
+            const optimalTemp = { min: 1570, max: 1630 };
 
             // Determine segment quality
             let segmentQuality = 'perfect';
@@ -491,33 +589,44 @@ class GameLoader {
             if (rotation < optimalRotation.min || pullRate < optimalPull.min) {
                 segmentQuality = 'thick';
                 feedback = 'Too slow! Crystal is getting thick and lumpy!';
-                points = -2;
+                points = 0;
             } else if (rotation > optimalRotation.max || pullRate > optimalPull.max) {
                 segmentQuality = 'thin';
                 feedback = 'Too fast! Crystal rod is too thin!';
-                points = -2;
+                points = 0;
+            } else if (temperature < optimalTemp.min || temperature > optimalTemp.max) {
+                segmentQuality = 'defective';
+                feedback = 'Temperature off! Crystal structure is defective!';
+                points = 0;
             } else {
                 segmentQuality = 'perfect';
                 feedback = 'Perfect! Uniform crystal growth! ✨';
-                points = 5;
+                points = 10;
                 perfectSegments++;
-                this.playDingSound();
+                this.playDingSound && this.playDingSound();
             }
 
-            // Create visual segment
+            // Add segment to rod and progress bar
+            addRodSegment(segmentQuality);
             const segment = document.createElement('div');
             segment.className = `crystal-segment ${segmentQuality}`;
             segment.style.cssText = `
-                width: ${segmentQuality === 'thick' ? '25px' : segmentQuality === 'thin' ? '15px' : '20px'};
-                height: 15px;
-                background: ${segmentQuality === 'perfect' ? 'linear-gradient(45deg, #E6E6FA, #DDA0DD)' : 
-                           segmentQuality === 'thick' ? '#8B4513' : '#696969'};
+                width: ${segmentQuality === 'thick' ? '36px' : segmentQuality === 'thin' ? '16px' : segmentQuality === 'defective' ? '24px' : '26px'};
+                height: 20px;
+                background: ${segmentQuality === 'perfect' ? 'linear-gradient(45deg, #E6E6FA, #DDA0DD, #9370DB)' : 
+                           segmentQuality === 'thick' ? '#8B4513' : segmentQuality === 'thin' ? '#696969' : '#3182ce'};
                 margin: 2px auto;
-                border-radius: 3px;
-                animation: segmentGrow 0.5s ease-out;
-                box-shadow: ${segmentQuality === 'perfect' ? '0 0 10px rgba(221, 160, 221, 0.6)' : 'none'};
+                border-radius: 6px;
+                animation: ${segmentQuality === 'perfect' ? 'sparkleGrow 1s' : 'segmentGrow 0.5s'};
+                box-shadow: ${segmentQuality === 'perfect' ? '0 0 18px #DDA0DD, 0 0 40px #9370DB inset' : 'none'};
             `;
-            
+            if (segmentQuality === 'perfect') {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'crystal-sparkle';
+                sparkle.style.cssText = 'position:absolute;top:2px;left:50%;transform:translateX(-50%);font-size:1.2rem;pointer-events:none;animation:sparkleAnim 1.2s;';
+                sparkle.textContent = '✨';
+                segment.appendChild(sparkle);
+            }
             progressSegments.appendChild(segment);
             segmentsGrown++;
 
@@ -525,64 +634,92 @@ class GameLoader {
             segmentCount.textContent = segmentsGrown;
             perfectCount.textContent = perfectSegments;
             growthStatus.textContent = feedback;
-            
             // Update score
             this.updateScore(points);
-            this.showFeedback(feedback, segmentQuality === 'perfect' ? 'success' : 'warning');
+            this.showFeedback(feedback, segmentQuality === 'perfect' ? 'success' : segmentQuality === 'defective' ? 'error' : 'warning');
 
-            // Update crystal rod visual
-            crystalRod.style.height = `${segmentsGrown * 15}px`;
-            crystalRod.style.transform = `rotate(${rotation * 2}deg)`;
+            // Keep rod visually bounded
+            crystalRod.style.height = `${Math.min(segmentsGrown * 22, 260)}px`;
 
             // Check completion
             if (segmentsGrown >= targetSegments) {
                 gameCompleted = true;
-                const bonus = perfectSegments === targetSegments ? 10 : 0;
+                const bonus = perfectSegments === targetSegments ? 15 : 0;
                 if (bonus > 0) {
                     this.updateScore(bonus);
-                    this.showFeedback('🏆 PERFECT CRYSTAL! Bonus +10 points!', 'success');
+                    this.showFeedback('🏆 PERFECT CRYSTAL! Bonus +15 points!', 'success');
                 }
                 setTimeout(() => {
                     this.completeGame(`Crystal complete! Perfect segments: ${perfectSegments}/${targetSegments}`);
                 }, 1500);
             }
-        };
+        }
 
-        // Update displays when sliders change
-        const updateDisplays = () => {
+        // Update slider displays and highlight optimal zones
+        function updateDisplays() {
             document.getElementById('rotationValue').textContent = `${rotationSlider.value} RPM`;
             document.getElementById('pullValue').textContent = `${pullSlider.value} mm/h`;
-            
+            document.getElementById('temperatureValue').textContent = `${tempSlider.value}°C`;
             // Visual feedback for optimal ranges
             const rotation = parseInt(rotationSlider.value);
             const pullRate = parseInt(pullSlider.value);
-            
+            const temperature = parseInt(tempSlider.value) + tempEventValue;
             rotationSlider.style.background = (rotation >= 40 && rotation <= 60) ? 
                 'linear-gradient(to right, #48bb78, #48bb78)' : 
                 'linear-gradient(to right, #e53e3e, #e53e3e)';
-            
             pullSlider.style.background = (pullRate >= 45 && pullRate <= 55) ? 
                 'linear-gradient(to right, #48bb78, #48bb78)' : 
                 'linear-gradient(to right, #e53e3e, #e53e3e)';
-        };
+            tempSlider.style.background = (temperature >= 1570 && temperature <= 1630) ? 
+                'linear-gradient(to right, #48bb78, #48bb78)' : 
+                'linear-gradient(to right, #3182ce, #e53e3e)';
+        }
 
         rotationSlider.addEventListener('input', updateDisplays);
         pullSlider.addEventListener('input', updateDisplays);
+        tempSlider.addEventListener('input', updateDisplays);
 
-        // Auto-grow segments every 2 seconds
-        const growthInterval = setInterval(() => {
-            if (!gameCompleted) {
-                growSegment();
-            } else {
-                clearInterval(growthInterval);
+        // Grow segment on button click
+        growSegmentBtn.addEventListener('click', () => {
+            if (!gameCompleted) growSegment.call(this);
+        });
+
+        // Random temperature event every 2-4 segments
+        function maybeTriggerTempEvent() {
+            if (gameCompleted || tempEventActive) return;
+            if (segmentsGrown > 0 && segmentsGrown % (2 + Math.floor(Math.random()*2)) === 0) {
+                tempEventActive = true;
+                tempEventValue = Math.random() < 0.5 ? -30 : 40;
+                growthStatus.textContent = tempEventValue > 0 ? '⚠️ Sudden heater spike! Adjust temperature!' : '⚠��� Cooling system glitch! Adjust temperature!';
+                tempSlider.value = parseInt(tempSlider.value) + tempEventValue;
+                updateDisplays();
+                tempEventTimeout = setTimeout(() => {
+                    tempEventActive = false;
+                    tempEventValue = 0;
+                    growthStatus.textContent = 'Temperature stabilized.';
+                    updateDisplays();
+                }, 2500);
             }
-        }, 2000);
+        }
+
+        // Grow segment and maybe trigger event
+        growSegmentBtn.addEventListener('click', () => {
+            maybeTriggerTempEvent();
+        });
 
         updateDisplays();
 
+        // Responsive: clear rod on resize
+        window.addEventListener('resize', () => {
+            crystalRod.style.maxWidth = '90%';
+        });
+
+        // Cleanup function to stop temp event
         return {
             type: 'precision',
-            cleanup: () => clearInterval(growthInterval)
+            cleanup: () => {
+                if (tempEventTimeout) clearTimeout(tempEventTimeout);
+            }
         };
     }
 
@@ -593,6 +730,7 @@ class GameLoader {
         gameArea.innerHTML = `
             <div class="game-instructions">
                 <p>🪞 Slice the silicon ingot at the perfect moment, then polish the wafer to perfection!</p>
+                <button id="showSlicingTutorialBtn" class="nav-btn next-btn" style="margin-top: 1rem;">How to Play?</button>
             </div>
             <div class="slicing-setup">
                 <div class="ingot-display">
@@ -609,7 +747,7 @@ class GameLoader {
                         <div class="scratches" id="scratches"></div>
                     </div>
                     <div class="polish-instructions">
-                        <p>Move mouse left-right to polish away scratches!</p>
+                        <p>Move your mouse (or finger) left-right to polish away scratches!</p>
                         <div class="polish-progress">
                             <div class="polish-bar" id="polishBar"></div>
                         </div>
@@ -620,12 +758,34 @@ class GameLoader {
                     <div>Perfect Slices: <span id="perfectSlices">0</span></div>
                 </div>
             </div>
+            <div id="slicingTutorialPopup" class="popup-overlay" style="display:none;z-index:2000;">
+                <div class="popup-content" style="max-width:400px;">
+                    <h2 style="margin-bottom:1rem;">How to Play: Slice & Polish</h2>
+                    <ol style="text-align:left;color:white;">
+                        <li>Watch the moving indicator on the ingot. The <span style="color:#48bb78;">green zone</span> is the perfect slice area.</li>
+                        <li>Click <b>SLICE NOW!</b> when the indicator is in the green zone for a perfect slice.</li>
+                        <li>After slicing, polish the wafer by moving your mouse (or finger) left and right until all scratches are gone.</li>
+                        <li>Try to get all <b>3 perfect slices</b> and <b>perfect polishes</b>!</li>
+                        <li>Watch the feedback and stats for hints.</li>
+                    </ol>
+                    <button id="closeSlicingTutorialBtn" class="nav-btn next-btn" style="margin-top:1rem;">Got it!</button>
+                </div>
+            </div>
         `;
 
         this.gameContainer.appendChild(gameArea);
+
+        // Tutorial popup logic
+        const slicingTutorialPopup = gameArea.querySelector('#slicingTutorialPopup');
+        const showSlicingTutorialBtn = gameArea.querySelector('#showSlicingTutorialBtn');
+        const closeSlicingTutorialBtn = gameArea.querySelector('#closeSlicingTutorialBtn');
+        showSlicingTutorialBtn.onclick = () => { slicingTutorialPopup.style.display = 'flex'; };
+        closeSlicingTutorialBtn.onclick = () => { slicingTutorialPopup.style.display = 'none'; };
+
         return this.initSlicingGame();
     }
 
+    // Improved and robust: Slice & Polish Game logic
     initSlicingGame() {
         let currentSlice = 0;
         let perfectSlices = 0;
@@ -634,7 +794,17 @@ class GameLoader {
         let timingDirection = 1;
         let isPolishing = false;
         let polishProgress = 0;
+        let polishDone = false;
+        let lastX = 0;
+        let polishMovement = 0;
         const totalSlices = 3;
+        // New scoring: each module (slice+polish) starts at 33.33, deductions for imperfect actions
+        const moduleScore = 100 / totalSlices;
+        let moduleScores = [moduleScore, moduleScore, moduleScore];
+        const slicePenalty = moduleScore * 0.5; // 50% penalty for uneven slice
+        const polishPenalty = moduleScore * 0.5; // 50% penalty for imperfect polish
+        let slicePerfect = [false, false, false];
+        let polishPerfect = [false, false, false];
 
         const sliceButton = document.getElementById('sliceButton');
         const timingIndicator = document.getElementById('timingIndicator');
@@ -645,6 +815,55 @@ class GameLoader {
         const polishBar = document.getElementById('polishBar');
         const sliceCount = document.getElementById('sliceCount');
         const perfectSlicesSpan = document.getElementById('perfectSlices');
+
+        // Style and align elements for responsiveness (improved)
+        const siliconIngot = document.getElementById('siliconIngot');
+        siliconIngot.style.position = 'relative';
+        siliconIngot.style.width = 'min(90vw, 220px)';
+        siliconIngot.style.height = '60px';
+        siliconIngot.style.background = 'linear-gradient(90deg, #e0e0e0 60%, #bdbdbd 100%)';
+        siliconIngot.style.borderRadius = '30px';
+        siliconIngot.style.margin = '0 auto 1rem auto';
+        siliconIngot.style.boxShadow = '0 2px 12px rgba(0,0,0,0.15)';
+        siliconIngot.style.display = 'flex';
+        siliconIngot.style.alignItems = 'center';
+        siliconIngot.style.justifyContent = 'center';
+        sliceLine.style.position = 'absolute';
+        sliceLine.style.top = '0';
+        sliceLine.style.left = '50%';
+        sliceLine.style.width = '4px';
+        sliceLine.style.height = '100%';
+        sliceLine.style.transform = 'translateX(-50%)';
+        sliceLine.style.background = '#e53e3e';
+        sliceLine.style.borderRadius = '2px';
+        sliceLine.style.boxShadow = '0 0 10px #e53e3e';
+        timingIndicator.style.position = 'absolute';
+        timingIndicator.style.top = '0';
+        timingIndicator.style.width = '16px';
+        timingIndicator.style.height = '100%';
+        timingIndicator.style.borderRadius = '8px';
+        timingIndicator.style.background = '#e53e3e';
+        timingIndicator.style.boxShadow = '0 0 8px #e53e3e';
+        timingIndicator.style.transition = 'left 0.05s';
+        timingIndicator.style.zIndex = '2';
+        // Wafer polish area
+        wafer.style.width = 'min(60vw, 140px)';
+        wafer.style.height = 'min(60vw, 140px)';
+        wafer.style.borderRadius = '50%';
+        wafer.style.background = 'radial-gradient(circle, #f7fafc 70%, #bdbdbd 100%)';
+        wafer.style.margin = '0 auto';
+        wafer.style.position = 'relative';
+        wafer.style.boxShadow = '0 0 10px #bdbdbd';
+        wafer.style.display = 'flex';
+        wafer.style.alignItems = 'center';
+        wafer.style.justifyContent = 'center';
+        scratches.style.position = 'absolute';
+        scratches.style.top = '0';
+        scratches.style.left = '0';
+        scratches.style.width = '100%';
+        scratches.style.height = '100%';
+        scratches.style.pointerEvents = 'none';
+        scratches.style.zIndex = '3';
 
         // Create scratches on wafer
         const createScratches = () => {
@@ -666,11 +885,10 @@ class GameLoader {
             }
         };
 
-        // Timing game mechanics
+        // Timing game mechanics (improved: wider window, visual pulse, more responsive)
         const updateTiming = () => {
             if (isPolishing || gameCompleted) return;
-
-            timingPosition += timingDirection * 2;
+            timingPosition += timingDirection * 2.5;
             if (timingPosition >= 100) {
                 timingPosition = 100;
                 timingDirection = -1;
@@ -678,28 +896,103 @@ class GameLoader {
                 timingPosition = 0;
                 timingDirection = 1;
             }
-
-            timingIndicator.style.left = `${timingPosition}%`;
-            
-            // Green zone is 45-55%
-            if (timingPosition >= 45 && timingPosition <= 55) {
+            // Keep indicator within ingot bounds
+            const minLeft = 0;
+            const maxLeft = 100;
+            const leftPercent = Math.max(minLeft, Math.min(maxLeft, timingPosition));
+            timingIndicator.style.left = `calc(${leftPercent}% - 8px)`;
+            // Green zone is 43-57% (wider)
+            if (timingPosition >= 43 && timingPosition <= 57) {
                 timingIndicator.style.background = '#48bb78';
                 sliceLine.style.background = '#48bb78';
-                sliceLine.style.boxShadow = '0 0 10px #48bb78';
+                sliceLine.style.boxShadow = '0 0 16px 4px #48bb78, 0 0 10px #48bb78';
+                timingIndicator.setAttribute('aria-label', 'Perfect slice zone!');
+                // Visual pulse
+                if (!timingIndicator.classList.contains('pulse')) {
+                    timingIndicator.classList.add('pulse');
+                    timingIndicator.style.animation = 'pulse-green 0.5s infinite alternate';
+                }
             } else {
                 timingIndicator.style.background = '#e53e3e';
                 sliceLine.style.background = '#e53e3e';
                 sliceLine.style.boxShadow = '0 0 10px #e53e3e';
+                timingIndicator.setAttribute('aria-label', 'Not in perfect zone');
+                timingIndicator.classList.remove('pulse');
+                timingIndicator.style.animation = '';
             }
         };
+        // Add pulse animation style if not present
+        if (!document.getElementById('pulse-green-style')) {
+            const style = document.createElement('style');
+            style.id = 'pulse-green-style';
+            style.textContent = `@keyframes pulse-green { 0% { box-shadow: 0 0 10px #48bb78; } 100% { box-shadow: 0 0 30px 8px #48bb78; } }`;
+            document.head.appendChild(style);
+        }
 
-        // Slice action
+        // Polish mechanics (robust, only during polish phase)
+        const handlePolish = (e) => {
+            if (!isPolishing || polishDone || gameCompleted) return;
+            let currentX;
+            if (e.type.startsWith('touch')) {
+                currentX = e.touches[0].clientX;
+            } else {
+                currentX = e.clientX;
+            }
+            const movement = Math.abs(currentX - lastX);
+            if (movement > 5) {
+                polishMovement += movement;
+                polishProgress = Math.min(100, polishMovement / 10);
+                polishBar.style.width = `${polishProgress}%`;
+                // Remove scratches gradually
+                const scratchElements = scratches.querySelectorAll('.scratch');
+                const scratchesToRemove = Math.floor((polishProgress / 100) * scratchElements.length);
+                scratchElements.forEach((scratch, index) => {
+                    if (index < scratchesToRemove) {
+                        scratch.style.opacity = '0';
+                    }
+                });
+                // Wafer becomes more reflective
+                wafer.style.filter = `brightness(${1 + polishProgress / 100}) contrast(${1 + polishProgress / 200})`;
+                if (polishProgress >= 100 && !polishDone) {
+                    polishDone = true;
+                    this.updateScore(15);
+                    this.showFeedback('✨ Perfect polish! Mirror finish achieved!', 'success');
+                    wafer.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.8)';
+                    // End polish phase after short delay
+                    setTimeout(() => {
+                        isPolishing = false;
+                        waferPolish.style.display = 'none';
+                        sliceButton.style.display = 'block';
+                        polishProgress = 0;
+                        polishBar.style.width = '0%';
+                        polishDone = false;
+                        polishMovement = 0;
+                        if (currentSlice >= totalSlices) {
+                            gameCompleted = true;
+                            const bonus = perfectSlices === totalSlices ? 15 : 0;
+                            if (bonus > 0) {
+                                this.updateScore(bonus);
+                                this.showFeedback('🏆 ALL PERFECT SLICES! Bonus +15!', 'success');
+                            }
+                            setTimeout(() => {
+                                this.completeGame(`Slicing complete! Perfect slices: ${perfectSlices}/${totalSlices}`);
+                            }, 1500);
+                        } else {
+                            timingPosition = 0;
+                            timingDirection = 1;
+                        }
+                    }, 800);
+                }
+            }
+            lastX = currentX;
+        };
+
+        // Slice action (improved: only allow during visible timing, wider window)
         const performSlice = () => {
             if (isPolishing || gameCompleted) return;
-
-            const isGoodSlice = timingPosition >= 45 && timingPosition <= 55;
+            // Only allow slice if indicator is visible and not in polish phase
+            const isGoodSlice = timingPosition >= 43 && timingPosition <= 57;
             currentSlice++;
-
             if (isGoodSlice) {
                 perfectSlices++;
                 this.updateScore(10);
@@ -709,93 +1002,38 @@ class GameLoader {
                 this.updateScore(-5);
                 this.showFeedback('❌ Uneven slice! Crystal cracked!', 'error');
             }
-
             // Update displays
             sliceCount.textContent = currentSlice;
             perfectSlicesSpan.textContent = perfectSlices;
-
             // Start polishing phase
             isPolishing = true;
             polishProgress = 0;
+            polishBar.style.width = '0%';
             waferPolish.style.display = 'block';
             sliceButton.style.display = 'none';
             createScratches();
-
-            // Reset for next slice or complete
-            setTimeout(() => {
-                if (currentSlice >= totalSlices) {
-                    gameCompleted = true;
-                    const bonus = perfectSlices === totalSlices ? 15 : 0;
-                    if (bonus > 0) {
-                        this.updateScore(bonus);
-                        this.showFeedback('🏆 ALL PERFECT SLICES! Bonus +15!', 'success');
-                    }
-                    setTimeout(() => {
-                        this.completeGame(`Slicing complete! Perfect slices: ${perfectSlices}/${totalSlices}`);
-                    }, 1500);
-                } else {
-                    // Reset for next slice
-                    isPolishing = false;
-                    waferPolish.style.display = 'none';
-                    sliceButton.style.display = 'block';
-                    timingPosition = 0;
-                    timingDirection = 1;
-                }
-            }, 3000);
+            polishDone = false;
+            polishMovement = 0;
         };
 
-        // Polish mechanics
-        let lastMouseX = 0;
-        let polishMovement = 0;
-
-        const handlePolish = (e) => {
-            if (!isPolishing) return;
-
-            const currentMouseX = e.clientX;
-            const movement = Math.abs(currentMouseX - lastMouseX);
-            
-            if (movement > 5) {
-                polishMovement += movement;
-                polishProgress = Math.min(100, polishMovement / 10);
-                polishBar.style.width = `${polishProgress}%`;
-
-                // Remove scratches gradually
-                const scratchElements = scratches.querySelectorAll('.scratch');
-                const scratchesToRemove = Math.floor((polishProgress / 100) * scratchElements.length);
-                
-                scratchElements.forEach((scratch, index) => {
-                    if (index < scratchesToRemove) {
-                        scratch.style.opacity = '0';
-                    }
-                });
-
-                // Wafer becomes more reflective
-                wafer.style.filter = `brightness(${1 + polishProgress / 100}) contrast(${1 + polishProgress / 200})`;
-
-                if (polishProgress >= 100) {
-                    this.updateScore(15);
-                    this.showFeedback('✨ Perfect polish! Mirror finish achieved!', 'success');
-                    wafer.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.8)';
-                }
-            }
-
-            lastMouseX = currentMouseX;
-        };
-
-        // Event listeners
-        sliceButton.addEventListener('click', performSlice);
+        // Mouse and touch listeners (robust, only during polish phase)
         document.addEventListener('mousemove', handlePolish);
-
+        document.addEventListener('touchmove', handlePolish);
+        // Event listeners
+        sliceButton.addEventListener('click', () => {
+            performSlice();
+        });
         // Start timing animation
         const timingInterval = setInterval(() => {
             updateTiming();
         }, 50);
-
+        // Cleanup listeners and intervals on game end
         return {
             type: 'slicing',
             cleanup: () => {
                 clearInterval(timingInterval);
                 document.removeEventListener('mousemove', handlePolish);
+                document.removeEventListener('touchmove', handlePolish);
             }
         };
     }
@@ -807,6 +1045,7 @@ class GameLoader {
         gameArea.innerHTML = `
             <div class="game-instructions">
                 <p>💡 Create circuit mask patterns using stencil pieces and UV light exposure!</p>
+                <button id="showLithoTutorialBtn" class="nav-btn next-btn" style="margin-top: 1rem;">How to Play?</button>
             </div>
             <div class="lithography-setup">
                 <div class="stencil-palette">
@@ -839,9 +1078,30 @@ class GameLoader {
                     <div>Correct Alignment: <span id="alignmentScore">0</span>%</div>
                 </div>
             </div>
+            <div id="lithoTutorialPopup" class="popup-overlay" style="display:none;z-index:2000;">
+                <div class="popup-content" style="max-width:400px;">
+                    <h2 style="margin-bottom:1rem;">How to Play: Lithography Logic Painter</h2>
+                    <ol style="text-align:left;color:white;">
+                        <li>Drag and drop the <b>stencil blocks</b> (AND, OR, NOT) onto the wafer surface.</li>
+                        <li>Try to match the <span style="color:#48bb78;">dashed outlines</span> (target positions) as closely as possible.</li>
+                        <li>When ready, click <b>EXPOSE UV LIGHT</b> to check your alignment and score.</li>
+                        <li>Green border = correct, red border = misaligned. Try to get all correct!</li>
+                        <li>Watch the feedback and stats for hints.</li>
+                    </ol>
+                    <button id="closeLithoTutorialBtn" class="nav-btn next-btn" style="margin-top:1rem;">Got it!</button>
+                </div>
+            </div>
         `;
 
         this.gameContainer.appendChild(gameArea);
+
+        // Tutorial popup logic
+        const lithoTutorialPopup = gameArea.querySelector('#lithoTutorialPopup');
+        const showLithoTutorialBtn = gameArea.querySelector('#showLithoTutorialBtn');
+        const closeLithoTutorialBtn = gameArea.querySelector('#closeLithoTutorialBtn');
+        showLithoTutorialBtn.onclick = () => { lithoTutorialPopup.style.display = 'flex'; };
+        closeLithoTutorialBtn.onclick = () => { lithoTutorialPopup.style.display = 'none'; };
+
         return this.initLithographyGame();
     }
 
@@ -849,11 +1109,22 @@ class GameLoader {
         let patternsPlaced = 0;
         let correctPlacements = 0;
         let gameCompleted = false;
-        const targetPatterns = [
-            { type: 'AND', x: 30, y: 30 },
-            { type: 'OR', x: 60, y: 50 },
-            { type: 'NOT', x: 40, y: 70 }
-        ];
+        let attempts = 0;
+        let hardMode = Math.random() < 0.5; // 50% chance for hard mode
+        // Randomize required gates and add decoys
+        const allGates = ['AND', 'OR', 'NOT', 'NAND', 'NOR'];
+        const requiredGates = allGates.slice(0, 3).sort(() => Math.random() - 0.5);
+        const decoyGates = allGates.slice(3);
+        // Randomize target positions, but clamp to stay within 0-60% x and 10-70% y
+        const targetPatterns = requiredGates.map((type, i) => ({
+            type,
+            x: Math.max(0, Math.min(60, 20 + i * 20 + Math.random() * 10)),
+            y: Math.max(10, Math.min(70, 20 + i * 20 + Math.random() * 10))
+        }));
+        // Add a decoy target
+        if (hardMode) {
+            targetPatterns.push({ type: decoyGates[0], x: 60, y: 80, decoy: true });
+        }
 
         const waferSurface = document.getElementById('waferSurface');
         const placedPatterns = document.getElementById('placedPatterns');
@@ -861,8 +1132,9 @@ class GameLoader {
         const exposeButton = document.getElementById('exposeButton');
         const patternCount = document.getElementById('patternCount');
         const alignmentScore = document.getElementById('alignmentScore');
+        // (Timer removed)
 
-        // Show target patterns as outlines
+        // Show target patterns as outlines (hard mode: less visible, decoy in red)
         targetPatterns.forEach(target => {
             const outline = document.createElement('div');
             outline.className = `target-outline ${target.type.toLowerCase()}`;
@@ -872,20 +1144,21 @@ class GameLoader {
                 top: ${target.y}%;
                 width: 40px;
                 height: 40px;
-                border: 2px dashed #48bb78;
+                border: 2px dashed ${target.decoy ? '#e53e3e' : (hardMode ? '#888' : '#48bb78')};
                 border-radius: 5px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: #48bb78;
+                color: ${target.decoy ? '#e53e3e' : (hardMode ? '#888' : '#48bb78')};
                 font-size: 0.8rem;
-                background: rgba(72, 187, 120, 0.1);
+                background: ${hardMode ? 'rgba(72,187,120,0.03)' : 'rgba(72, 187, 120, 0.1)'};
+                ${hardMode ? 'opacity:0.5;' : ''}
             `;
-            outline.textContent = target.type;
+            outline.textContent = target.type + (target.decoy ? ' (decoy)' : '');
             targetPattern.appendChild(outline);
         });
 
-        // Drag and drop mechanics
+        // Drag and drop mechanics with snapping, clearer feedback, and decoy/hard mode
         document.querySelectorAll('.stencil-item').forEach(item => {
             item.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', JSON.stringify({
@@ -898,10 +1171,34 @@ class GameLoader {
         waferSurface.addEventListener('dragover', (e) => e.preventDefault());
         waferSurface.addEventListener('drop', (e) => {
             e.preventDefault();
+            attempts++;
             const data = JSON.parse(e.dataTransfer.getData('text/plain'));
             const rect = waferSurface.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            let x = ((e.clientX - rect.left) / rect.width) * 100;
+            let y = ((e.clientY - rect.top) / rect.height) * 100;
+
+            // Snap to nearest target if close enough
+            let snapped = false;
+            let snappedTarget = null;
+            for (const target of targetPatterns) {
+                const dist = Math.sqrt(Math.pow(target.x - x, 2) + Math.pow(target.y - y, 2));
+                if (target.type === data.pattern && dist < 15) {
+                    x = target.x;
+                    y = target.y;
+                    snapped = true;
+                    snappedTarget = target;
+                    break;
+                }
+            }
+
+            // Prevent duplicate placement on same target
+            const alreadyPlaced = Array.from(placedPatterns.children).some(
+                el => el.dataset.pattern === data.pattern && Math.abs(el.dataset.x - x) < 1 && Math.abs(el.dataset.y - y) < 1
+            );
+            if (alreadyPlaced) {
+                this.showFeedback('You already placed this gate at the target!', 'warning');
+                return;
+            }
 
             // Create placed pattern
             const pattern = document.createElement('div');
@@ -923,15 +1220,26 @@ class GameLoader {
                 cursor: move;
                 box-shadow: 0 2px 10px rgba(65, 105, 225, 0.4);
                 animation: patternPlace 0.3s ease-out;
+                border: 2px solid ${snapped ? '#48bb78' : '#e53e3e'};
             `;
-            pattern.textContent = data.pattern;
+            pattern.textContent = data.pattern + (snapped ? ' ✔' : '');
             pattern.dataset.pattern = data.pattern;
             pattern.dataset.x = x;
             pattern.dataset.y = y;
+            if (snappedTarget && snappedTarget.decoy) pattern.dataset.decoy = 'true';
 
             placedPatterns.appendChild(pattern);
             patternsPlaced++;
             patternCount.textContent = patternsPlaced;
+
+            // Show instant feedback
+            if (snapped && (!snappedTarget || !snappedTarget.decoy)) {
+                this.showFeedback('Snapped to target! Perfect placement.', 'success');
+            } else if (snappedTarget && snappedTarget.decoy) {
+                this.showFeedback('Oops! That was a decoy target. Try again!', 'error');
+            } else {
+                this.showFeedback('Try to drop closer to the dashed box for a perfect score.', 'warning');
+            }
 
             // Check alignment
             this.checkAlignment();
@@ -944,37 +1252,53 @@ class GameLoader {
             this.performUVExposure();
         });
 
+        // Improved alignment check with visual feedback and accessibility
         this.checkAlignment = () => {
             const placedElements = placedPatterns.querySelectorAll('.placed-pattern');
             correctPlacements = 0;
+            let decoyHits = 0;
 
             placedElements.forEach(placed => {
                 const placedX = parseFloat(placed.dataset.x);
                 const placedY = parseFloat(placed.dataset.y);
                 const placedType = placed.dataset.pattern;
+                const isDecoy = placed.dataset.decoy === 'true';
 
                 // Check if within tolerance of any target
                 const matchingTarget = targetPatterns.find(target => {
                     const distance = Math.sqrt(
                         Math.pow(target.x - placedX, 2) + Math.pow(target.y - placedY, 2)
                     );
-                    return target.type === placedType && distance < 15; // 15% tolerance
+                    return target.type === placedType && distance < 8 && !target.decoy;
                 });
-
-                if (matchingTarget) {
+                if (isDecoy) {
+                    decoyHits++;
+                    placed.style.border = '2px solid #e53e3e';
+                    placed.style.boxShadow = '0 0 15px #e53e3e';
+                    placed.setAttribute('aria-label', 'Decoy hit');
+                } else if (matchingTarget) {
                     correctPlacements++;
                     placed.style.border = '2px solid #48bb78';
                     placed.style.boxShadow = '0 0 15px rgba(72, 187, 120, 0.6)';
+                    placed.setAttribute('aria-label', 'Correctly aligned');
                 } else {
                     placed.style.border = '2px solid #e53e3e';
                     placed.style.boxShadow = '0 0 15px rgba(229, 62, 62, 0.6)';
+                    placed.setAttribute('aria-label', 'Misaligned');
                 }
             });
 
             const alignment = patternsPlaced > 0 ? Math.round((correctPlacements / patternsPlaced) * 100) : 0;
             alignmentScore.textContent = alignment;
+            // Show live scoring tip
+            if (alignment === 100 && correctPlacements === requiredGates.length) {
+                this.showFeedback('All gates perfectly aligned! Expose UV for max score!', 'success');
+            } else if (alignment >= 67) {
+                this.showFeedback('Almost there! Adjust gates for a perfect score.', 'info');
+            }
         };
 
+        // Improved UV exposure: clearer feedback, bonus, and replayability
         this.performUVExposure = () => {
             // UV light animation
             const uvLight = document.createElement('div');
@@ -993,26 +1317,48 @@ class GameLoader {
             waferSurface.appendChild(uvLight);
 
             // Calculate score
-            let score = correctPlacements * 5; // +5 per correct pattern
-            const misaligned = patternsPlaced - correctPlacements;
-            score -= misaligned * 3; // -3 per misaligned
+            let decoyHits = 0;
+            let placedElements = placedPatterns.querySelectorAll('.placed-pattern');
+            placedElements.forEach(placed => { if (placed.dataset.decoy === 'true') decoyHits++; });
+            let score = correctPlacements * 30; // +30 per correct (max 90)
+            let misaligned = patternsPlaced - correctPlacements - decoyHits;
+            score -= misaligned * 10; // -10 per misaligned
+            score -= decoyHits * 20; // -20 per decoy
+            score -= Math.max(0, attempts - requiredGates.length) * 5; // -5 per extra attempt
+            // Hard mode bonus
+            if (hardMode && correctPlacements === requiredGates.length && decoyHits === 0 && misaligned === 0) score += 20;
+            // Clamp score
+            score = Math.max(0, Math.min(100, score));
 
-            // Bonus for complex patterns (XOR simulation)
-            if (correctPlacements >= 3) {
-                score += 10;
-                this.showFeedback('🧠 Complex XOR pattern created! Bonus +10!', 'success');
+            // Confetti for perfect
+            if (score === 100) {
+                for (let i = 0; i < 30; i++) {
+                    const conf = document.createElement('div');
+                    conf.style.cssText = `position:absolute;left:${Math.random()*100}%;top:0;width:8px;height:8px;background:hsl(${Math.random()*360},90%,60%);border-radius:50%;z-index:999;animation:confetti-fall 1.2s linear forwards;`;
+                    conf.innerHTML = '🎉';
+                    waferSurface.appendChild(conf);
+                    setTimeout(() => conf.remove(), 1200);
+                }
             }
+
+            // Show score breakdown
+            let breakdown = `Score: ${score} = (${correctPlacements}×30)`;
+            if (misaligned > 0) breakdown += ` - (${misaligned}×10)`;
+            if (decoyHits > 0) breakdown += ` - (${decoyHits}×20)`;
+            if (attempts > requiredGates.length) breakdown += ` - (${attempts-requiredGates.length}×5)`;
+            if (hardMode && correctPlacements === requiredGates.length && decoyHits === 0 && misaligned === 0) breakdown += ' +20 (hard mode bonus)';
+            this.showFeedback(breakdown, 'info');
 
             this.updateScore(score);
 
             setTimeout(() => {
                 uvLight.remove();
                 
-                if (correctPlacements >= 2) {
+                if (correctPlacements >= requiredGates.length) {
                     gameCompleted = true;
                     this.showFeedback('💡 UV exposure complete! Logic gates printed!', 'success');
                     setTimeout(() => {
-                        this.completeGame(`Lithography complete! Correct patterns: ${correctPlacements}/${targetPatterns.length}`);
+                        this.completeGame(`Lithography complete! Correct patterns: ${correctPlacements}/${requiredGates.length}`);
                     }, 1500);
                 } else {
                     this.showFeedback('❌ Poor alignment! Try repositioning patterns.', 'warning');
@@ -1029,39 +1375,47 @@ class GameLoader {
 
     // Chapter 6: Logic Gate Builder (connection game)
     createConnectionGame(gameData) {
+        // Redesigned Logic Gate Builder Game
         const gameArea = document.createElement('div');
         gameArea.className = 'connection-game';
         gameArea.innerHTML = `
-            <div class="game-instructions">
-                <p>🧠 Build logic circuits using gates (AND, OR, NOT) to match the required output!</p>
+            <div class="game-header" style="background:rgba(0,0,0,0.18);padding:1.2rem 1.5rem 0.7rem 1.5rem;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <h2 style="color:#ffe066;margin:0;font-size:1.5rem;">Logic Circuit Challenge</h2>
+                    <div style="color:#fff;font-size:1.05rem;">Build a logic circuit to match the target truth table.</div>
+                </div>
+                <button id="showLogicTutorialBtn" class="nav-btn next-btn" style="background:#48bb78;color:#fff;font-weight:bold;padding:0.5rem 1.2rem;border-radius:8px;font-size:1rem;">How to Play?</button>
             </div>
-            <div class="circuit-builder">
-                <div class="gate-library">
-                    <h4>Logic Gates</h4>
-                    <div class="gate-item" draggable="true" data-gate="AND">
-                        <div class="gate-symbol">⚡ AND</div>
-                    </div>
-                    <div class="gate-item" draggable="true" data-gate="OR">
-                        <div class="gate-symbol">⚡ OR</div>
-                    </div>
-                    <div class="gate-item" draggable="true" data-gate="NOT">
-                        <div class="gate-symbol">⚡ NOT</div>
+            <div class="game-body" style="background:rgba(0,0,0,0.10);padding:2rem 1rem 1.5rem 1rem;border-radius:0 0 16px 16px;display:flex;flex-wrap:wrap;gap:2.5rem;justify-content:center;align-items:flex-start;">
+                <div class="gate-library" style="min-width:120px;max-width:140px;">
+                    <h4 style="color:#48bb78;">Gates</h4>
+                    <div class="gate-item" draggable="true" data-gate="AND"><span class="gate-symbol">∧</span> AND</div>
+                    <div class="gate-item" draggable="true" data-gate="OR"><span class="gate-symbol">∨</span> OR</div>
+                    <div class="gate-item" draggable="true" data-gate="NOT"><span class="gate-symbol">¬</span> NOT</div>
+                </div>
+                <div class="circuit-panel" style="flex:1;min-width:340px;max-width:440px;">
+                    <div class="circuit-canvas-container" style="background:rgba(255,255,255,0.08);border-radius:12px;padding:1rem 0.5rem 0.5rem 0.5rem;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+                        <div class="input-section" style="display:flex;gap:1.2rem;justify-content:center;margin-bottom:0.7rem;">
+                            <div class="input-pin" data-input="A" style="background:#ffe066;color:#222;font-weight:bold;padding:0.3rem 0.7rem;border-radius:8px;">A</div>
+                            <div class="input-pin" data-input="B" style="background:#ffe066;color:#222;font-weight:bold;padding:0.3rem 0.7rem;border-radius:8px;">B</div>
+                        </div>
+                        <div class="circuit-canvas" id="circuitCanvas" style="margin:0 auto;position:relative;width:340px;height:220px;background:#181c24;border:2px solid #48bb78;border-radius:12px;overflow:hidden;"></div>
+                        <div class="output-section" style="display:flex;gap:0.5rem;align-items:center;justify-content:center;margin-top:0.7rem;">
+                            <div class="output-pin" id="outputPin" style="background:#ffe066;color:#222;font-weight:bold;padding:0.3rem 0.7rem;border-radius:8px;">OUT</div>
+                            <div class="output-led" id="outputLed" style="width:20px;height:20px;border-radius:50%;background:#666;box-shadow:0 0 8px #222;transition:background 0.3s,box-shadow 0.3s;"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="circuit-workspace">
-                    <div class="input-section">
-                        <div class="input-pin" data-input="A">A</div>
-                        <div class="input-pin" data-input="B">B</div>
-                    </div>
-                    <div class="circuit-canvas" id="circuitCanvas"></div>
-                    <div class="output-section">
-                        <div class="output-pin" id="outputPin">OUT</div>
-                        <div class="output-led" id="outputLed"></div>
-                    </div>
-                </div>
-                <div class="truth-table">
-                    <h4>Target Truth Table</h4>
-                    <table id="truthTable">
+                <div class="truth-table-panel" style="min-width:170px;max-width:210px;">
+                    <h4 style="color:#48bb78;">Target Table</h4>
+                    <select id="levelSelector" style="margin-bottom:0.5rem;width:100%;padding:0.2rem 0.5rem;border-radius:6px;">
+                        <option value="or">OR</option>
+                        <option value="and">AND</option>
+                        <option value="not">NOT (A)</option>
+                        <option value="xor">XOR</option>
+                        <option value="nand">NAND</option>
+                    </select>
+                    <table id="truthTable" style="width:100%;background:rgba(0,0,0,0.08);border-radius:8px;">
                         <tr><th>A</th><th>B</th><th>OUT</th></tr>
                         <tr><td>0</td><td>0</td><td id="out00">0</td></tr>
                         <tr><td>0</td><td>1</td><td id="out01">1</td></tr>
@@ -1069,29 +1423,124 @@ class GameLoader {
                         <tr><td>1</td><td>1</td><td id="out11">1</td></tr>
                     </table>
                 </div>
-                <div class="test-controls">
-                    <button id="testCircuit" class="test-btn">▶️ Run Test</button>
-                    <button id="clearCircuit" class="clear-btn">🗑️ Clear</button>
+            </div>
+            <div class="game-controls" style="margin-top:1.5rem;text-align:center;">
+                <button id="testCircuit" class="test-btn" style="background:#48bb78;color:#fff;font-weight:bold;padding:0.6rem 1.5rem;border-radius:8px;font-size:1.1rem;">▶️ Test Circuit</button>
+                <button id="clearCircuit" class="clear-btn" style="background:#e53e3e;color:#fff;font-weight:bold;padding:0.6rem 1.5rem;border-radius:8px;font-size:1.1rem;margin-left:1rem;">🗑️ Clear</button>
+            </div>
+            <div class="scoreboard" style="margin-top:1.2rem;color:white;text-align:center;font-size:1.1rem;">
+                <span id="logicScore">Score: 0</span>
+                <div id="logicScoreBreakdown" style="margin-top:0.5rem;font-size:0.98em;color:#ffe066;"></div>
+            </div>
+            <div id="logicTutorialPopup" class="popup-overlay" style="display:none;z-index:2000;">
+                <div class="popup-content" style="max-width:420px;">
+                    <h2 style="margin-bottom:1rem;">How to Play: Logic Circuit Challenge</h2>
+                    <ol style="text-align:left;color:white;">
+                        <li><b>Goal:</b> Build a logic circuit that matches the <span style="color:#48bb78;">target truth table</span>.</li>
+                        <li>Drag gates (AND, OR, NOT) from the left onto the workspace.</li>
+                        <li>Connect gates by clicking an <b>output pin</b> (right), then an <b>input pin</b> (left) of another gate.</li>
+                        <li>Inputs A and B are always available. Connect them to gate inputs as needed.</li>
+                        <li>Click <b>Test Circuit</b> to check your solution. Green = correct, red = incorrect.</li>
+                        <li>Use <b>Clear</b> to reset the workspace.</li>
+                        <li><b>Scoring:</b> <span style="color:#ffe066;">40 points</span> for solving an easy logic (NOT, OR, AND), <span style="color:#ffe066;">60 points</span> for solving a hard logic (NOR, NAND).<br>To reach 100 points, solve one easy and one hard logic.</li>
+                    </ol>
+                    <button id="closeLogicTutorialBtn" class="nav-btn next-btn" style="margin-top:1rem;">Got it!</button>
                 </div>
             </div>
         `;
 
         this.gameContainer.appendChild(gameArea);
+
+        // Tutorial popup logic
+        const logicTutorialPopup = gameArea.querySelector('#logicTutorialPopup');
+        const showLogicTutorialBtn = gameArea.querySelector('#showLogicTutorialBtn');
+        const closeLogicTutorialBtn = gameArea.querySelector('#closeLogicTutorialBtn');
+        showLogicTutorialBtn.onclick = () => { logicTutorialPopup.style.display = 'flex'; };
+        closeLogicTutorialBtn.onclick = () => { logicTutorialPopup.style.display = 'none'; };
+
         return this.initConnectionGame();
     }
 
     initConnectionGame() {
+        // --- Improved Logic Gate Builder ---
         let placedGates = [];
         let connections = [];
         let gameCompleted = false;
-        const targetTruthTable = [0, 1, 1, 1]; // OR gate behavior
+        let currentLevel = 'or';
+        let targetTruthTable = [0, 1, 1, 1];
+        const truthTables = {
+            or:   [0, 1, 1, 1],
+            and:  [0, 0, 0, 1],
+            not:  [1, 1, 0, 0], // NOT A (ignores B)
+            nor:  [1, 0, 0, 0],
+            nand: [1, 1, 1, 0]
+        };
+        const minimalGates = {
+            or: 1,
+            and: 1,
+            not: 1,
+            nor: 2,
+            nand: 2
+        };
+        const levelNames = {
+            or: 'OR',
+            and: 'AND',
+            not: 'NOT (A)',
+            nor: 'NOR',
+            nand: 'NAND'
+        };
 
         const circuitCanvas = document.getElementById('circuitCanvas');
         const outputLed = document.getElementById('outputLed');
         const testButton = document.getElementById('testCircuit');
         const clearButton = document.getElementById('clearCircuit');
+        const levelSelector = document.getElementById('levelSelector');
+        const truthTableCells = [
+            document.getElementById('out00'),
+            document.getElementById('out01'),
+            document.getElementById('out10'),
+            document.getElementById('out11')
+        ];
+        const logicScore = document.getElementById('logicScore');
+        const logicScoreBreakdown = document.getElementById('logicScoreBreakdown');
+
+        // Set up canvas size and style for boundaries
+        circuitCanvas.style.position = 'relative';
+        circuitCanvas.style.width = '320px';
+        circuitCanvas.style.height = '200px';
+        circuitCanvas.style.background = 'rgba(255,255,255,0.08)';
+        circuitCanvas.style.border = '2px solid #48bb78';
+        circuitCanvas.style.borderRadius = '12px';
+        circuitCanvas.style.overflow = 'hidden';
+
+        // Level selector logic
+        function updateTruthTable(level) {
+            targetTruthTable = truthTables[level];
+            currentLevel = level;
+            truthTableCells.forEach((cell, i) => cell.textContent = targetTruthTable[i]);
+        }
+        // Remove XOR from selector, add NOR
+        levelSelector.querySelector('option[value="xor"]').remove();
+        const norOption = document.createElement('option');
+        norOption.value = 'nor';
+        norOption.textContent = 'NOR';
+        levelSelector.appendChild(norOption);
+        levelSelector.value = 'or';
+        levelSelector.addEventListener('change', (e) => {
+            updateTruthTable(e.target.value);
+            clearButton.click();
+            logicScore.textContent = 'Score: 0';
+            logicScoreBreakdown.textContent = '';
+            outputLed.style.background = '#666';
+            gameCompleted = false;
+        });
+        updateTruthTable('or');
 
         // Drag and drop for gates
+        // Remove XOR and NOR gates from library
+        document.querySelectorAll('.gate-item').forEach(item => {
+            if (item.dataset.gate === 'XOR' || item.dataset.gate === 'NOR') item.remove();
+        });
         document.querySelectorAll('.gate-item').forEach(item => {
             item.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', JSON.stringify({
@@ -1106,16 +1555,16 @@ class GameLoader {
             e.preventDefault();
             const data = JSON.parse(e.dataTransfer.getData('text/plain'));
             const rect = circuitCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const x = Math.max(0, Math.min(rect.width - 60, e.clientX - rect.left - 30));
+            const y = Math.max(0, Math.min(rect.height - 40, e.clientY - rect.top - 20));
 
             // Create gate element
             const gate = document.createElement('div');
             gate.className = `placed-gate ${data.gate.toLowerCase()}`;
             gate.style.cssText = `
                 position: absolute;
-                left: ${x - 30}px;
-                top: ${y - 20}px;
+                left: ${x}px;
+                top: ${y}px;
                 width: 60px;
                 height: 40px;
                 background: linear-gradient(45deg, #32CD32, #228B22);
@@ -1127,28 +1576,86 @@ class GameLoader {
                 color: white;
                 font-size: 0.8rem;
                 font-weight: bold;
-                cursor: move;
+                cursor: pointer;
                 box-shadow: 0 2px 10px rgba(50, 205, 50, 0.4);
                 animation: gatePlace 0.3s ease-out;
+                z-index: 2;
             `;
             gate.textContent = data.gate;
             gate.dataset.gate = data.gate;
             gate.dataset.id = data.id;
+            gate.dataset.x = x;
+            gate.dataset.y = y;
+
+            // Add input/output pins for connection
+            const inputPin = document.createElement('div');
+            inputPin.className = 'gate-pin input-pin';
+            inputPin.style.cssText = 'position:absolute;left:-10px;top:16px;width:12px;height:12px;background:#fff;border:2px solid #48bb78;border-radius:50%;z-index:3;cursor:pointer;';
+            inputPin.title = 'Input';
+            gate.appendChild(inputPin);
+            const outputPin = document.createElement('div');
+            outputPin.className = 'gate-pin output-pin';
+            outputPin.style.cssText = 'position:absolute;right:-10px;top:16px;width:12px;height:12px;background:#fff;border:2px solid #e53e3e;border-radius:50%;z-index:3;cursor:pointer;';
+            outputPin.title = 'Output';
+            gate.appendChild(outputPin);
 
             circuitCanvas.appendChild(gate);
             placedGates.push({
                 id: data.id,
                 type: data.gate,
                 element: gate,
-                x: x - 30,
-                y: y - 20
+                x,
+                y
             });
         });
+
+        // --- Connection logic: click-to-connect pins ---
+        let connectFrom = null;
+        circuitCanvas.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('gate-pin')) return;
+            const pin = e.target;
+            const gateDiv = pin.parentElement;
+            const gateId = gateDiv.dataset.id;
+            const isOutput = pin.classList.contains('output-pin');
+            if (isOutput) {
+                connectFrom = { gateId, pinType: 'output', pinEl: pin };
+                pin.style.background = '#ffe066';
+            } else if (connectFrom && connectFrom.pinType === 'output') {
+                // Connect output to this input
+                connections.push({ from: connectFrom.gateId, to: gateId });
+                connectFrom.pinEl.style.background = '#fff';
+                connectFrom = null;
+                drawConnections();
+            }
+        });
+
+        // Draw connection lines between gates
+        function drawConnections() {
+            // Remove old lines
+            circuitCanvas.querySelectorAll('.conn-line').forEach(line => line.remove());
+            connections.forEach(conn => {
+                const fromGate = placedGates.find(g => g.id == conn.from);
+                const toGate = placedGates.find(g => g.id == conn.to);
+                if (!fromGate || !toGate) return;
+                const fromRect = fromGate.element.getBoundingClientRect();
+                const toRect = toGate.element.getBoundingClientRect();
+                const canvasRect = circuitCanvas.getBoundingClientRect();
+                // Calculate start/end points relative to canvas
+                const x1 = fromGate.x + 60;
+                const y1 = fromGate.y + 22;
+                const x2 = toGate.x;
+                const y2 = toGate.y + 22;
+                const line = document.createElement('div');
+                line.className = 'conn-line';
+                line.style.cssText = `position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1;`;
+                line.innerHTML = `<svg width="320" height="200" style="position:absolute;left:0;top:0;pointer-events:none;"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#48bb78" stroke-width="3" marker-end="url(#arrowhead)"/></svg>`;
+                circuitCanvas.appendChild(line);
+            });
+        }
 
         // Test circuit functionality
         testButton.addEventListener('click', () => {
             if (gameCompleted) return;
-
             this.testLogicCircuit();
         });
 
@@ -1159,65 +1666,95 @@ class GameLoader {
             outputLed.style.background = '#666';
         });
 
+        // --- Improved simulation: build a directed graph and simulate logic ---
         this.testLogicCircuit = () => {
             if (placedGates.length === 0) {
                 this.showFeedback('❌ No gates placed! Add some logic gates first.', 'warning');
                 return;
             }
-
+            if (gameCompleted) return; // Prevent double scoring
             // Simulate circuit for all input combinations
             const results = [];
             const inputs = [[0,0], [0,1], [1,0], [1,1]];
-
-            inputs.forEach(([a, b]) => {
-                let output = this.simulateCircuit(a, b);
+            for (const [a, b] of inputs) {
+                const output = simulateFullCircuit(a, b);
                 results.push(output);
-            });
-
-            // Check if results match target
+            }
             const isCorrect = JSON.stringify(results) === JSON.stringify(targetTruthTable);
-            
+            let score = 0;
+            let breakdown = '';
             if (isCorrect) {
                 gameCompleted = true;
-                this.updateScore(10);
+                // New scoring: 40 for easy, 60 for hard
+                if (["not","or","and"].includes(currentLevel)) {
+                    score = 40;
+                    breakdown = '+40 (easy logic)';
+                } else if (["nor","nand"].includes(currentLevel)) {
+                    score = 60;
+                    breakdown = '+60 (hard logic)';
+                }
+                this.updateScore(score);
+                logicScore.textContent = `Score: ${score}`;
+                logicScoreBreakdown.textContent = breakdown;
                 outputLed.style.background = '#48bb78';
                 outputLed.style.boxShadow = '0 0 20px #48bb78';
-                this.showFeedback('✅ Perfect! Circuit logic is correct!', 'success');
-                
-                // Bonus for solving without hints
-                if (placedGates.length === 1) {
-                    this.updateScore(10);
-                    this.showFeedback('🧠 Solved with minimal gates! Bonus +10!', 'success');
-                }
-
+                this.showFeedback(`✅ Perfect! You built a working ${levelNames[currentLevel]} circuit!`, 'success');
                 setTimeout(() => {
-                    this.completeGame('Logic circuit complete! You built a working OR gate!');
+                    this.completeGame(`Logic circuit complete! You built a working ${levelNames[currentLevel]} gate!`);
                 }, 1500);
             } else {
-                this.updateScore(-5);
+                score = 0;
+                this.updateScore(score);
+                logicScore.textContent = `Score: ${score}`;
+                logicScoreBreakdown.textContent = 'Incorrect output';
                 outputLed.style.background = '#e53e3e';
                 outputLed.style.boxShadow = '0 0 20px #e53e3e';
-                this.showFeedback('❌ Incorrect output! Check your logic.', 'error');
-                
-                // Show sparks animation for wrong connection
+                this.showFeedback('❌ Incorrect output! Check your logic and connections.', 'error');
                 this.showSparks();
             }
         };
 
-        this.simulateCircuit = (inputA, inputB) => {
-            // Simple simulation - for this demo, we'll check for OR gate
-            const orGate = placedGates.find(gate => gate.type === 'OR');
-            if (orGate) {
-                return inputA || inputB ? 1 : 0;
+        // --- Simulate the circuit as a graph ---
+        function simulateFullCircuit(a, b) {
+            // Build a map of gate outputs
+            const gateOutputs = {};
+            // Inputs: A and B are always available
+            gateOutputs['A'] = a;
+            gateOutputs['B'] = b;
+            // For NOT, only A is used
+            function computeGateOutput(gateId) {
+                const gate = placedGates.find(g => g.id == gateId);
+                if (!gate) return 0;
+                const inputConns = connections.filter(c => c.to == gateId);
+                let inputs = [];
+                if (inputConns.length === 0) {
+                    if (gate.type === 'AND' || gate.type === 'OR' || gate.type === 'NAND' || gate.type === 'NOR') {
+                        inputs = [a, b];
+                    } else if (gate.type === 'NOT') {
+                        inputs = [a];
+                    }
+                } else {
+                    inputs = inputConns.map(c => gateOutputs[c.from] !== undefined ? gateOutputs[c.from] : computeGateOutput(c.from));
+                }
+                let out = 0;
+                if (gate.type === 'AND') {
+                    out = inputs.reduce((acc, v) => acc & v, 1);
+                } else if (gate.type === 'OR') {
+                    out = inputs.reduce((acc, v) => acc | v, 0);
+                } else if (gate.type === 'NOT') {
+                    out = inputs.length > 0 ? (inputs[0] ? 0 : 1) : 1;
+                } else if (gate.type === 'NAND') {
+                    out = 1 - (inputs.reduce((acc, v) => acc & v, 1));
+                } else if (gate.type === 'NOR') {
+                    out = 1 - (inputs.reduce((acc, v) => acc | v, 0));
+                }
+                gateOutputs[gateId] = out;
+                return out;
             }
-            
-            const andGate = placedGates.find(gate => gate.type === 'AND');
-            if (andGate) {
-                return inputA && inputB ? 1 : 0;
-            }
-
-            return 0; // Default
-        };
+            const outputGates = placedGates.filter(g => !connections.some(c => c.from == g.id));
+            if (outputGates.length === 0) return 0;
+            return outputGates.map(g => computeGateOutput(g.id)).reduce((acc, v) => acc | v, 0);
+        }
 
         this.showSparks = () => {
             for (let i = 0; i < 5; i++) {
@@ -1235,15 +1772,13 @@ class GameLoader {
                     pointer-events: none;
                 `;
                 circuitCanvas.appendChild(spark);
-                
                 setTimeout(() => spark.remove(), 1000);
             }
         };
 
-        return { 
+        return {
             type: 'connection',
-            testLogicCircuit: this.testLogicCircuit,
-            simulateCircuit: this.simulateCircuit
+            testLogicCircuit: this.testLogicCircuit
         };
     }
 
@@ -1254,6 +1789,7 @@ class GameLoader {
         gameArea.innerHTML = `
             <div class="game-instructions">
                 <p>⚙️ Send instructions to the CPU! Create programs to perform calculations and operations.</p>
+                <button id="showCPUTutorialBtn" class="nav-btn next-btn" style="margin-top: 1rem;">How to Play?</button>
             </div>
             <div class="cpu-simulator">
                 <div class="instruction-palette">
@@ -1316,6 +1852,20 @@ class GameLoader {
                 <div class="programming-stats">
                     <div>Programs Run: <span id="programCount">0</span></div>
                     <div>Successful Operations: <span id="successCount">0</span></div>
+                </div>
+            </div>
+            <div id="cpuTutorialPopup" class="popup-overlay" style="display:none;z-index:2000;">
+                <div class="popup-content" style="max-width:400px;">
+                    <h2 style="margin-bottom:1rem;">How to Play: Mini CPU Test</h2>
+                    <ol style="text-align:left;color:white;">
+                        <li>Drag instructions (LOAD, ADD, SUB, STORE, BLINK) into the program lines.</li>
+                        <li>Set values for A and B, then click <b>Execute Program</b> to run your code.</li>
+                        <li>Try to get the correct result in the registers and output.</li>
+                        <li>Score more by using fewer instructions and getting correct results in fewer attempts.</li>
+                        <li>Use <b>Clear Program</b> to reset and try again.</li>
+                    </ol>
+                    <div style="margin-top:1rem;color:#ffe066;font-size:0.95em;">Scoring: +10 for correct, -2 per extra instruction, +5 bonus for perfect run.</div>
+                    <button id="closeCPUTutorialBtn" class="nav-btn next-btn" style="margin-top:1rem;">Got it!</button>
                 </div>
             </div>
         `;

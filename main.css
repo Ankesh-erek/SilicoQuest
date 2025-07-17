@@ -7,7 +7,7 @@
 
 :root {
     /* Modern Color Palette */
-    --primary-gradient: linear-gradient(135deg,  #667eea 0%, #764ba2 100%);
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
@@ -1190,7 +1190,7 @@ body::before {
 
 /* Enhanced Certificate Styles */
 .certificate-content {
-    max-width: 800px;
+    max-width: 1100px; /* Increased for landscape */
     width: 95%;
     max-height: 90vh;
     overflow-y: auto;
@@ -1199,58 +1199,165 @@ body::before {
 }
 
 .certificate {
-    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-    border: 3px solid #4299e1;
+    background: #fdfdfd;
+    border: 15px solid #d4af37; /* Gold border */
     border-radius: var(--border-radius);
     padding: 2rem;
     margin-bottom: 1rem;
     text-align: center;
     position: relative;
     overflow: hidden;
-    min-height: 400px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 1000px; /* Landscape width */
+    height: 650px; /* Landscape height */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-image: url('assets/images/certificate-bg.png'); /* Subtle background pattern */
+    background-size: cover;
 }
 
 .certificate::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+    animation: certificateShine 5s infinite;
+}
+
+.certificate::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-    animation: certificateShine 3s infinite;
+    border: 2px solid #d4af37;
+    border-radius: var(--border-radius);
+    margin: 5px;
+    pointer-events: none;
+}
+
+.certificate-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Align items with space between */
+    gap: 20px;
+    margin-bottom: 2rem; /* Increased margin */
+    padding: 0 2rem; /* Added padding */
+}
+
+.certificate-logo {
+    width: 120px; /* Slightly smaller logo */
+    height: auto;
 }
 
 .certificate-header h1 {
     color: #2d3748;
     margin-bottom: 0.5rem;
-    font-size: 2.2rem;
+    font-size: 2.8rem; /* Larger title */
     text-shadow: 0 2px 10px rgba(0,0,0,0.1);
     font-weight: 700;
 }
 
 .certificate-header h2 {
     color: #4a5568;
-    font-size: 1.5rem;
+    font-size: 1.6rem; /* Larger subtitle */
     margin-bottom: 1.5rem;
     font-weight: 400;
 }
 
+.certificate-body {
+    padding: 0 2rem; /* Added padding */
+}
+
 .certificate-body p {
-    color: #718096;
-    margin-bottom: 0.8rem;
-    font-size: 1.1rem;
-    line-height: 1.6;
+    color: #5a5a5a;
+    margin-bottom: 1rem; /* Increased margin */
+    font-size: 1.3rem; /* Larger font */
+    line-height: 1.7;
+    font-family: 'Georgia', serif;
 }
 
 .certificate-body h3 {
-    color: #2d3748;
-    font-size: 2.2rem;
-    margin: 1.5rem 0;
-    border-bottom: 3px solid #4299e1;
-    padding-bottom: 1rem;
-    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 3rem; /* Larger name font */
+    margin: 2rem 0;
+    border-bottom: 2px solid #d4af37;
+    padding-bottom: 1.5rem; /* Increased padding */
+    font-family: 'Great Vibes', cursive;
+    font-weight: 500;
+}
+
+.certificate-signature {
+    display: flex;
+    justify-content: space-between; /* Align signatures with space between */
+    margin-top: 3rem; /* Increased margin */
+    padding: 0 4rem; /* Added padding */
+}
+
+.signature-block {
+    width: 40%;
+    text-align: center;
+}
+
+.signature-line {
+    border-top: 2px solid #333;
+    margin-bottom: 0.5rem;
+}
+
+.signature-title {
+    font-size: 1rem;
+    color: #5a5a5a;
+    font-family: 'Georgia', serif;
+}
+
+.certificate-seal {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 120px;
+    height: 120px;
+}
+
+.certificate-seal img {
+    width: 100%;
+    height: auto;
+}
+
+.certificate-title {
+    text-align: center; /* Center the title and subtitle */
+}
+
+.certificate-ribbon {
+    position: absolute;
+    bottom: -25px;
+    left: 2rem; /* Adjusted position */
+    width: 120px; /* Increased width */
+    height: 180px; /* Increased height */
+    background: #d4af37;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.certificate-ribbon::before, .certificate-ribbon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 25px;
+    background: #c79c2a;
+}
+
+.certificate-ribbon::before {
+    top: 30px;
+}
+
+.certificate-ribbon::after {
+    bottom: 30px;
 }
 
 .certificate-actions {

@@ -119,20 +119,7 @@ class Certificate {
                 font-size: 1.1rem;
             }
 
-            .certificate-logo {
-                width: 80px;
-                height: 80px;
-                background: linear-gradient(135deg, #4299e1, #3182ce);
-                border-radius: 50%;
-                margin: 0 auto 1rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2rem;
-                color: white;
-                box-shadow: 0 10px 20px rgba(66, 153, 225, 0.3);
-            }
-
+            
             .certificate-decorations {
                 position: absolute;
                 top: 20px;
@@ -329,21 +316,45 @@ class Certificate {
         return `
             .certificate {
                 background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-                border: 5px solid #4299e1;
+                border: 10px solid #4299e1;
                 border-radius: 20px;
-                padding: 3rem;
+                padding: 2rem;
                 text-align: center;
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-                min-height: 500px;
+                width: 1000px;
+                height: 650px;
+                box-shadow: none;
+                margin: 0 auto;
                 display: flex;
                 flex-direction: column;
-                justify-content: space-between;
-                max-width: 800px;
-                margin: 0 auto;
+                justify-content: center;
             }
-            
+
+            .certificate .watermark {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 500px;
+                height: 500px;
+                opacity: 0.1;
+                transform: translate(-50%, -50%) rotate(-15deg);
+                z-index: 0;
+            }
+
+            .certificate-header {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
+                margin-bottom: 1.5rem;
+            }
+
+            .certificate-logo {
+                width: 150px;
+                height: auto;
+            }
+
             .certificate-header h1 {
                 color: #2d3748;
                 font-size: 2.5rem;
@@ -352,39 +363,18 @@ class Certificate {
             
             .certificate-header h2 {
                 color: #4a5568;
-                font-size: 1.8rem;
-                margin-bottom: 1rem;
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
                 font-weight: 400;
             }
             
             .certificate-body h3 {
                 color: #2d3748;
-                font-size: 2.5rem;
-                margin: 2rem 0;
+                font-size: 2.2rem;
+                margin: 1.5rem 0;
                 border-bottom: 3px solid #4299e1;
                 padding-bottom: 1rem;
                 font-weight: 700;
-            }
-            
-            .certificate-logo {
-                width: 80px;
-                height: 80px;
-                background: linear-gradient(135deg, #4299e1, #3182ce);
-                border-radius: 50%;
-                margin: 0 auto 1rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 2rem;
-                color: white;
-            }
-            
-            .certificate-achievement {
-                background: rgba(66, 153, 225, 0.1);
-                border-radius: 15px;
-                padding: 1.5rem;
-                margin: 1.5rem 0;
-                border-left: 5px solid #4299e1;
             }
         `;
     }

@@ -331,84 +331,186 @@ class SilicoQuestApp {
     createDesertScene(container) {
         const scene = document.createElement('div');
         scene.innerHTML = `
-            <div style="width: 100%; height: 200px; background: linear-gradient(to bottom, #87CEEB 0%, #F4A460 70%); border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div style="width: 100%; height: 200px; border-radius: 15px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: dayNightCycle 20s infinite linear;">
                 <!-- Sky -->
-                <div style="position: absolute; top: 0; width: 100%; height: 70%; background: linear-gradient(to bottom, #87CEEB, #F0E68C);"></div>
-                
+                <div style="position: absolute; top: 0; width: 100%; height: 70%; background: linear-gradient(to bottom, #7ecfff 0%, #f0e68c 100%);" class="sky"></div>
+                <!-- Atmospheric haze overlay -->
+                <div style="position: absolute; top: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at 50% 80%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.01) 80%); pointer-events:none;"></div>
+                <!-- Animated Clouds -->
+                <div style="position: absolute; top: 18%; left: -80px; width: 70px; height: 30px; background: #fff; border-radius: 30px; opacity: 0.7; filter: blur(2px); animation: cloudMove1 18s linear infinite;"></div>
+                <div style="position: absolute; top: 10%; left: -120px; width: 100px; height: 40px; background: #fff; border-radius: 40px; opacity: 0.5; filter: blur(3px); animation: cloudMove2 22s linear infinite;"></div>
                 <!-- Sun -->
-                <div style="position: absolute; top: 15%; right: 20%; width: 50px; height: 50px; background: radial-gradient(circle, #FFD700, #FFA500); border-radius: 50%; box-shadow: 0 0 30px #FFD700; animation: sunGlow 3s infinite;"></div>
-                
-                <!-- Desert dunes -->
-                <div style="position: absolute; bottom: 0; width: 100%; height: 40%; background: #F4A460;"></div>
-                <div style="position: absolute; bottom: 15%; left: 0; width: 40%; height: 25%; background: #DEB887; border-radius: 50% 50% 0 0; transform: scaleX(2);"></div>
-                <div style="position: absolute; bottom: 10%; right: 0; width: 50%; height: 30%; background: #D2B48C; border-radius: 50% 50% 0 0; transform: scaleX(1.8);"></div>
-                
+                <div style="position: absolute; top: 15%; right: 20%; width: 54px; height: 54px; background: radial-gradient(circle, #ffe066 60%, #ffa500 100%); border-radius: 50%; box-shadow: 0 0 40px #FFD700, 0 0 120px #fff7; animation: sunGlow 5s infinite, sunPath 20s infinite linear;"></div>
+                <!-- Shooting Star -->
+                <div style="position: absolute; top: 20%; left: -100px; width: 100px; height: 2px; background: linear-gradient(to right, white, transparent); animation: shootingStar 10s infinite linear 5s;"></div>
+                <!-- Desert dunes (parallax) -->
+                <div style="position: absolute; bottom: 0; width: 100%; height: 44%; background: linear-gradient(180deg, #f4a460 60%, #e2b07a 100%); border-radius: 0 0 15px 15px; box-shadow: 0 -8px 30px #e2b07a88; z-index:1; animation: duneParallax1 18s infinite alternate ease-in-out;" class="sand"></div>
+                <div style="position: absolute; bottom: 12%; left: 0; width: 45%; height: 28%; background: linear-gradient(180deg, #deb887 60%, #e2b07a 100%); border-radius: 50% 50% 0 0; transform: scaleX(2); box-shadow: 0 0 30px #deb88788; z-index:2; animation: duneWave 6s infinite alternate, duneParallax2 22s infinite alternate-reverse;"></div>
+                <div style="position: absolute; bottom: 8%; right: 0; width: 55%; height: 32%; background: linear-gradient(180deg, #d2b48c 60%, #e2b07a 100%); border-radius: 50% 50% 0 0; transform: scaleX(1.8); box-shadow: 0 0 30px #d2b48c88; z-index:2; animation: duneWave 7s infinite alternate-reverse, duneParallax3 20s infinite alternate;"></div>
+                <!-- Animated Cactus -->
+                <div style="position: absolute; bottom: 40px; left: 60px; width: 18px; height: 60px; background: #228B22; border-radius: 8px; box-shadow: 0 0 10px #228B22; animation: cactusWiggle 3s infinite alternate; z-index:3;">
+                    <div style="position: absolute; left: -10px; top: 20px; width: 10px; height: 25px; background: #228B22; border-radius: 8px 8px 8px 8px  / 8px 8px 8px 8px; transform: rotate(-30deg);"></div>
+                    <div style="position: absolute; right: -10px; top: 30px; width: 10px; height: 20px; background: #228B22; border-radius: 8px 8px 8px 8px  / 8px 8px 8px 8px; transform: rotate(30deg);"></div>
+                </div>
+                <!-- Realistic sand blowing in wind (curved, staggered) -->
+                <svg style="position:absolute; bottom:70px; left:40px; width:120px; height:30px; pointer-events:none; z-index:4;" viewBox="0 0 120 30">
+                    <path d="M10 10 Q40 0 80 10 Q100 15 110 5" stroke="#fff8" stroke-width="3" fill="none" style="opacity:0.7; animation: sandWindPath 3.5s infinite linear;"/>
+                    <path d="M30 20 Q60 10 100 20" stroke="#fff6" stroke-width="2" fill="none" style="opacity:0.5; animation: sandWindPath 4.2s infinite linear 1.2s;"/>
+                </svg>
+                <svg style="position:absolute; bottom:100px; left:200px; width:80px; height:20px; pointer-events:none; z-index:4;" viewBox="0 0 80 20">
+                    <path d="M0 10 Q30 0 80 10" stroke="#fff8" stroke-width="2" fill="none" style="opacity:0.6; animation: sandWindPath 3.8s infinite linear 0.7s;"/>
+                </svg>
                 <!-- Sand particles -->
-                <div style="position: absolute; bottom: 20%; left: 30%; width: 4px; height: 4px; background: #F4A460; border-radius: 50%; animation: sandFloat 4s infinite;"></div>
-                <div style="position: absolute; bottom: 25%; left: 60%; width: 3px; height: 3px; background: #DEB887; border-radius: 50%; animation: sandFloat 5s infinite 1s;"></div>
-                <div style="position: absolute; bottom: 30%; left: 80%; width: 5px; height: 5px; background: #D2B48C; border-radius: 50%; animation: sandFloat 3s infinite 2s;"></div>
-                
-                <!-- Quartz crystals scattered -->
-                <div style="position: absolute; bottom: 15%; left: 25%; width: 20px; height: 20px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalSparkle 2s infinite;"></div>
-                <div style="position: absolute; bottom: 12%; right: 35%; width: 15px; height: 15px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalSparkle 2s infinite 0.5s;"></div>
-                
+                <div style="position: absolute; bottom: 20%; left: 30%; width: 4px; height: 4px; background: #F4A460; border-radius: 50%; animation: sandFloat 3s infinite ease-in-out;"></div>
+                <div style="position: absolute; bottom: 25%; left: 60%; width: 3px; height: 3px; background: #DEB887; border-radius: 50%; animation: sandFloat 4s infinite ease-in-out 1s;"></div>
+                <div style="position: absolute; bottom: 30%; left: 80%; width: 5px; height: 5px; background: #D2B48C; border-radius: 50%; animation: sandFloat 2.5s infinite ease-in-out 2s;"></div>
+                <!-- Magnifying glass zooms in (realistic) -->
+                <div id="magnifier" style="position: absolute; left: 60%; bottom: 30px; width: 64px; height: 64px; border-radius: 50%; border: 5px solid #b0b0b0; background: radial-gradient(circle at 30% 30%, #fff8 40%, #fff0 100%), rgba(255,255,255,0.18); box-shadow: 0 0 18px #fff8, 0 0 0 8px #fff2 inset, 0 8px 18px #aaa8; z-index: 10; cursor: pointer; animation: magnifierMove 6s infinite alternate; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    <!-- Glass reflection -->
+                    <div style="position:absolute; left:10px; top:8px; width:30px; height:10px; background:linear-gradient(90deg,#fff8,#fff0); border-radius:8px; opacity:0.5; transform:rotate(-18deg);"></div>
+                    <!-- Revealed quartz crystals under magnifier -->
+                    <div style="width: 32px; height: 32px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD 80%, #fff 100%); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalShimmer 2.2s infinite; position: absolute; left: 12px; top: 12px; box-shadow: 0 0 18px #fff8;"></div>
+                    <div style="width: 18px; height: 18px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD 80%, #fff 100%); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalShimmer 2.2s infinite 0.7s; position: absolute; left: 30px; top: 28px; box-shadow: 0 0 8px #fff8;"></div>
+                    <div style="position: absolute; left: 22px; top: 2px; color: #FFD700; font-size: 1.3rem; animation: sparkleFloat 1.5s infinite;">✨</div>
+                </div>
+                <!-- Quartz crystals scattered (background, not under magnifier) -->
+                <div style="position: absolute; bottom: 15%; left: 25%; width: 20px; height: 20px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalSparkle 1.5s infinite;"></div>
+                <div style="position: absolute; bottom: 12%; right: 35%; width: 15px; height: 15px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalSparkle 1.5s infinite 0.5s;"></div>
+                <!-- Sparkle effects -->
+                <div style="position: absolute; bottom: 50px; left: 120px; color: #FFD700; font-size: 1.2rem; animation: sparkleFloat 1.5s infinite;">✨</div>
+                <div style="position: absolute; bottom: 80px; right: 100px; color: #FFD700; font-size: 1rem; animation: sparkleFloat 1.5s infinite 0.7s;">✨</div>
+                <div style="position: absolute; bottom: 30px; left: 200px; color: #FFD700; font-size: 1.4rem; animation: sparkleFloat 1.5s infinite 1.4s;">✨</div>
                 <!-- Desert text -->
-                <div style="position: absolute; top: 10px; left: 10px; color: #8B4513; font-weight: bold; font-size: 0.9rem; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">🏜️ Silicon Desert</div>
+                <div style="position: absolute; top: 10px; left: 10px; color: #8B4513; font-weight: bold; font-size: 0.9rem; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); letter-spacing: 1px; animation: desertTextGlow 2s infinite alternate;">🏜️ Desert</div>
             </div>
         `;
-        
         // Add animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes sunGlow {
-                0%, 100% { box-shadow: 0 0 30px #FFD700; }
-                50% { box-shadow: 0 0 50px #FFD700, 0 0 70px #FFA500; }
+                0%, 100% { box-shadow: 0 0 40px #FFD700, 0 0 120px #fff7; transform: scale(1); }
+                50% { box-shadow: 0 0 70px #FFD700, 0 0 180px #FFA500, 0 0 120px #fff7; transform: scale(1.1); }
             }
             @keyframes sandFloat {
-                0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.7; }
-                25% { transform: translateY(-10px) translateX(5px); opacity: 1; }
-                50% { transform: translateY(-5px) translateX(-3px); opacity: 0.8; }
-                75% { transform: translateY(-15px) translateX(8px); opacity: 0.9; }
+                0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); opacity: 0.7; }
+                50% { transform: translateY(-20px) translateX(10px) rotate(180deg); opacity: 1; }
+            }
+            @keyframes sandWindPath {
+                0% { opacity: 0.7; stroke-dashoffset: 0; }
+                80% { opacity: 0.7; }
+                100% { opacity: 0; stroke-dashoffset: 120; }
             }
             @keyframes crystalSparkle {
-                0%, 100% { opacity: 0.8; transform: scale(1); }
-                50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 15px rgba(221, 160, 221, 0.8); }
+                0%, 100% { opacity: 0.7; transform: scale(1) rotate(0deg); }
+                50% { opacity: 1; transform: scale(1.15) rotate(10deg); box-shadow: 0 0 20px rgba(221, 160, 221, 0.9); }
+            }
+            @keyframes crystalShimmer {
+                0%, 100% { filter: brightness(1) drop-shadow(0 0 0 #fff); }
+                40% { filter: brightness(1.2) drop-shadow(0 0 8px #fff8); }
+                60% { filter: brightness(1.5) drop-shadow(0 0 18px #fff); }
+                80% { filter: brightness(1.2) drop-shadow(0 0 8px #fff8); }
+            }
+            @keyframes dayNightCycle {
+                0%, 100% { background-color: #87CEEB; }
+                50% { background-color: #000033; }
+            }
+            .sky { animation: skyColor 20s infinite linear; }
+            @keyframes skyColor {
+                0%, 100% { background: linear-gradient(to bottom, #7ecfff 0%, #f0e68c 100%); }
+                50% { background: linear-gradient(to bottom, #000033, #1a1a4a); }
+            }
+            .sand { animation: sandColor 20s infinite linear; }
+            @keyframes sandColor {
+                0%, 100% { filter: brightness(1); }
+                50% { filter: brightness(0.4); }
+            }
+            @keyframes sunPath {
+                0%, 100% { top: 15%; right: 20%; opacity: 1; }
+                25% { top: 5%; right: 50%; opacity: 1; }
+                50% { top: 15%; right: 80%; opacity: 0; }
+                75% { top: 50%; right: 50%; opacity: 0; }
+            }
+            @keyframes shootingStar {
+                0% { transform: translateX(0) translateY(0); opacity: 1; }
+                100% { transform: translateX(400px) translateY(100px); opacity: 0; }
+            }
+            @keyframes cloudMove1 {
+                0% { left: -80px; }
+                100% { left: 100%; }
+            }
+            @keyframes cloudMove2 {
+                0% { left: -120px; }
+                100% { left: 100%; }
+            }
+            @keyframes duneWave {
+                0% { transform: scaleX(2) translateY(0); }
+                100% { transform: scaleX(2) translateY(-8px); }
+            }
+            @keyframes duneParallax1 {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(18px); }
+            }
+            @keyframes duneParallax2 {
+                0% { transform: scaleX(2) translateY(0) translateX(0); }
+                100% { transform: scaleX(2) translateY(-8px) translateX(12px); }
+            }
+            @keyframes duneParallax3 {
+                0% { transform: scaleX(1.8) translateY(0) translateX(0); }
+                100% { transform: scaleX(1.8) translateY(-8px) translateX(-12px); }
+            }
+            @keyframes cactusWiggle {
+                0% { transform: rotate(-2deg); }
+                100% { transform: rotate(2deg); }
+            }
+            @keyframes sparkleFloat {
+                0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); opacity: 0.8; }
+                50% { transform: translateY(-15px) rotate(200deg) scale(1.2); opacity: 1; }
+            }
+            @keyframes desertTextGlow {
+                0% { text-shadow: 1px 1px 2px #fff, 0 0 8px #FFD700; }
+                100% { text-shadow: 2px 2px 8px #FFD700, 0 0 16px #FFA500; }
+            }
+            @keyframes magnifierMove {
+                0% { left: 60%; bottom: 30px; }
+                40% { left: 60%; bottom: 30px; }
+                60% { left: 40%; bottom: 60px; }
+                100% { left: 40%; bottom: 60px; }
             }
         `;
         document.head.appendChild(style);
-        container.appendChild(scene);
+        container.appendChild(scene.firstElementChild);
     }
 
     createQuartzCrystal(container) {
         const crystal = document.createElement('div');
         crystal.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: radial-gradient(circle, rgba(230, 230, 250, 0.1), transparent); border-radius: 15px; position: relative;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: radial-gradient(circle, rgba(230, 230, 250, 0.1), transparent); border-radius: 15px; position: relative; perspective: 1000px;">
                 <!-- Main crystal structure -->
-                <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                <div style="position: relative; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; animation: rotateCrystal 20s infinite linear;">
                     <!-- Central crystal -->
-                    <div style="width: 60px; height: 100px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD, #9370DB); clip-path: polygon(50% 0%, 20% 30%, 0% 100%, 100% 100%, 80% 30%); animation: crystalPulse 3s infinite; box-shadow: 0 0 40px rgba(147, 112, 219, 0.6); position: relative; z-index: 2;">
+                    <div style="width: 60px; height: 100px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD, #9370DB); clip-path: polygon(50% 0%, 20% 30%, 0% 100%, 100% 100%, 80% 30%); animation: crystalPulse 2.5s infinite; box-shadow: 0 0 50px rgba(147, 112, 219, 0.8); position: relative; z-index: 2;">
                         <!-- Crystal facets -->
-                        <div style="position: absolute; top: 20%; left: 20%; width: 60%; height: 40%; background: rgba(255,255,255,0.4); clip-path: polygon(0% 0%, 100% 20%, 80% 100%, 0% 80%); animation: facetShimmer 2s infinite;"></div>
-                        <div style="position: absolute; top: 40%; right: 10%; width: 30%; height: 50%; background: rgba(255,255,255,0.3); clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 20% 100%); animation: facetShimmer 2s infinite 0.5s;"></div>
+                        <div style="position: absolute; top: 20%; left: 20%; width: 60%; height: 40%; background: rgba(255,255,255,0.5); clip-path: polygon(0% 0%, 100% 20%, 80% 100%, 0% 80%); animation: facetShimmer 1.5s infinite;"></div>
+                        <div style="position: absolute; top: 40%; right: 10%; width: 30%; height: 50%; background: rgba(255,255,255,0.4); clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 20% 100%); animation: facetShimmer 1.5s infinite 0.5s;"></div>
                     </div>
                     
                     <!-- Smaller crystals around -->
-                    <div style="position: absolute; left: -30px; top: 20px; width: 25px; height: 40px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 3s infinite 0.5s; opacity: 0.8;"></div>
-                    <div style="position: absolute; right: -25px; top: 30px; width: 20px; height: 35px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 3s infinite 1s; opacity: 0.7;"></div>
-                    <div style="position: absolute; left: -15px; bottom: 10px; width: 18px; height: 30px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 3s infinite 1.5s; opacity: 0.6;"></div>
+                    <div style="position: absolute; left: -35px; top: 25px; width: 25px; height: 40px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 2.5s infinite 0.5s; opacity: 0.8; transform: rotateY(45deg) translateZ(20px);"></div>
+                    <div style="position: absolute; right: -30px; top: 35px; width: 20px; height: 35px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 2.5s infinite 1s; opacity: 0.7; transform: rotateY(-45deg) translateZ(20px);"></div>
+                    <div style="position: absolute; left: -20px; bottom: 15px; width: 18px; height: 30px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation: crystalPulse 2.5s infinite 1.5s; opacity: 0.6; transform: rotateY(30deg) translateZ(30px);"></div>
                 </div>
                 
                 <!-- Energy emanation -->
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 150px; height: 150px; border: 2px solid rgba(147, 112, 219, 0.3); border-radius: 50%; animation: energyRing 4s infinite;"></div>
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 1px solid rgba(147, 112, 219, 0.2); border-radius: 50%; animation: energyRing 4s infinite 1s;"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 160px; height: 160px; border: 2px solid rgba(147, 112, 219, 0.4); border-radius: 50%; animation: energyRing 3s infinite linear;"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 220px; border: 1px solid rgba(147, 112, 219, 0.3); border-radius: 50%; animation: energyRing 3s infinite linear 1s;"></div>
                 
                 <!-- Sparkle effects -->
-                <div style="position: absolute; top: 20%; left: 20%; color: #FFD700; font-size: 1rem; animation: sparkleFloat 2s infinite;">✨</div>
-                <div style="position: absolute; top: 30%; right: 25%; color: #FFD700; font-size: 0.8rem; animation: sparkleFloat 2s infinite 0.7s;">✨</div>
-                <div style="position: absolute; bottom: 25%; left: 30%; color: #FFD700; font-size: 1.2rem; animation: sparkleFloat 2s infinite 1.4s;">✨</div>
+                <div style="position: absolute; top: 20%; left: 20%; color: #FFD700; font-size: 1.2rem; animation: sparkleFloat 1.5s infinite;">✨</div>
+                <div style="position: absolute; top: 30%; right: 25%; color: #FFD700; font-size: 1rem; animation: sparkleFloat 1.5s infinite 0.7s;">✨</div>
+                <div style="position: absolute; bottom: 25%; left: 30%; color: #FFD700; font-size: 1.4rem; animation: sparkleFloat 1.5s infinite 1.4s;">✨</div>
                 
                 <!-- Information label -->
-                <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; text-align: center;">
+                <div style="position: absolute; bottom: 10px; left:100px; background: rgba(0,0,0,0.8); color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; text-align: center; backdrop-filter: blur(5px);">
                     <div>💎 Pure Quartz Crystal</div>
                     <div style="font-size: 0.7rem; opacity: 0.8;">SiO₂ - Silicon Dioxide</div>
                 </div>
@@ -418,37 +520,41 @@ class SilicoQuestApp {
         // Add crystal-specific animations
         const style = document.createElement('style');
         style.textContent = `
+            @keyframes rotateCrystal {
+                0% { transform: rotateY(0deg) rotateX(10deg); }
+                100% { transform: rotateY(360deg) rotateX(10deg); }
+            }
             @keyframes crystalPulse {
                 0%, 100% { 
                     transform: scale(1); 
                     box-shadow: 0 0 40px rgba(147, 112, 219, 0.6); 
                 }
                 50% { 
-                    transform: scale(1.05); 
-                    box-shadow: 0 0 60px rgba(147, 112, 219, 0.9), 0 0 80px rgba(221, 160, 221, 0.5); 
+                    transform: scale(1.08); 
+                    box-shadow: 0 0 70px rgba(147, 112, 219, 1), 0 0 90px rgba(221, 160, 221, 0.7); 
                 }
             }
             @keyframes facetShimmer {
-                0%, 100% { opacity: 0.3; }
-                50% { opacity: 0.7; }
+                0%, 100% { opacity: 0.4; transform: skewX(-10deg); }
+                50% { opacity: 0.8; transform: skewX(10deg); }
             }
             @keyframes energyRing {
                 0% { 
-                    transform: translate(-50%, -50%) scale(0.8); 
-                    opacity: 0.8; 
+                    transform: translate(-50%, -50%) scale(0.7); 
+                    opacity: 0.9; 
                 }
                 100% { 
-                    transform: translate(-50%, -50%) scale(1.2); 
+                    transform: translate(-50%, -50%) scale(1.3); 
                     opacity: 0; 
                 }
             }
             @keyframes sparkleFloat {
                 0%, 100% { 
-                    transform: translateY(0px) rotate(0deg); 
-                    opacity: 0.7; 
+                    transform: translateY(0px) rotate(0deg) scale(1); 
+                    opacity: 0.8; 
                 }
                 50% { 
-                    transform: translateY(-10px) rotate(180deg); 
+                    transform: translateY(-15px) rotate(200deg) scale(1.2); 
                     opacity: 1; 
                 }
             }
@@ -536,92 +642,249 @@ class SilicoQuestApp {
     createFurnaceExterior(container) {
         const furnace = document.createElement('div');
         furnace.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px;">
-                <div style="width: 150px; height: 180px; background: linear-gradient(to bottom, #708090, #2F4F4F); border-radius: 10px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                    <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 100px; height: 20px; background: #FF4500; border-radius: 10px; animation: flicker 1s infinite;"></div>
-                    <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 80px; height: 60px; background: #FF6347; border-radius: 50%; animation: heat 2s infinite;"></div>
-                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 2rem;">🏭</div>
+            <div style="display: flex; justify-content: center; align-items: center; height: 220px;">
+                <div style="width: 180px; height: 180px; background: linear-gradient(180deg, #444 60%, #222 100%); border-radius: 18px 18px 30px 30px/22px 22px 40px 40px; position: relative; box-shadow: 0 10px 40px #0008, 0 0 0 6px #ff000033 inset; overflow: visible;">
+                    <!-- Glowing pipes -->
+                    <div style="position: absolute; left: -30px; top: 40px; width: 30px; height: 18px; background: linear-gradient(90deg, #ff4e00 60%, #fff0 100%); border-radius: 12px 0 0 12px; box-shadow: 0 0 18px #ff4e00, 0 0 8px #fff8; animation: pipeGlow 2s infinite alternate;"></div>
+                    <div style="position: absolute; right: -30px; top: 80px; width: 30px; height: 18px; background: linear-gradient(270deg, #ff4e00 60%, #fff0 100%); border-radius: 0 12px 12px 0; box-shadow: 0 0 18px #ff4e00, 0 0 8px #fff8; animation: pipeGlow 2s infinite alternate 1s;"></div>
+                    <!-- Glowing valves -->
+                    <div style="position: absolute; left: 10px; top: 20px; width: 22px; height: 22px; background: radial-gradient(circle, #ff4e00 60%, #fff0 100%); border-radius: 50%; box-shadow: 0 0 18px #ff4e00, 0 0 8px #fff8; animation: valveGlow 1.5s infinite alternate;"></div>
+                    <div style="position: absolute; right: 10px; top: 120px; width: 22px; height: 22px; background: radial-gradient(circle, #ff4e00 60%, #fff0 100%); border-radius: 50%; box-shadow: 0 0 18px #ff4e00, 0 0 8px #fff8; animation: valveGlow 1.5s infinite alternate 0.7s;"></div>
+                    <!-- Furnace body details -->
+                    <div style="position: absolute; left: 50%; top: 60px; transform: translateX(-50%); width: 120px; height: 80px; background: linear-gradient(180deg, #ff4e00 60%, #ffb300 100%); border-radius: 60px 60px 40px 40px/40px 40px 60px 60px; box-shadow: 0 0 40px #ff4e00, 0 0 80px #ffb300; opacity: 0.7; filter: blur(2px); animation: coreGlow 2.5s infinite alternate;"></div>
+                    <!-- Steam -->
+                    <div style="position: absolute; left: 30px; top: -30px; width: 30px; height: 40px; z-index: 2;">
+                        <div style="position: absolute; left: 0; top: 0; width: 30px; height: 40px; background: radial-gradient(circle, #fff8 60%, #fff0 100%); border-radius: 50%; opacity: 0.7; animation: steamRise 2.2s infinite;"></div>
+                    </div>
+                    <div style="position: absolute; right: 30px; top: -20px; width: 24px; height: 32px; z-index: 2;">
+                        <div style="position: absolute; left: 0; top: 0; width: 24px; height: 32px; background: radial-gradient(circle, #fff8 60%, #fff0 100%); border-radius: 50%; opacity: 0.5; animation: steamRise 2.7s infinite 1.1s;"></div>
+                    </div>
+                    <!-- Flames -->
+                    <div style="position: absolute; left: 50%; bottom: -18px; transform: translateX(-50%); width: 60px; height: 38px; z-index: 3;">
+                        <div style="position: absolute; left: 0; bottom: 0; width: 60px; height: 38px; background: radial-gradient(ellipse at 50% 80%, #ffb300 60%, #ff4e00 100%, #fff0 100%); border-radius: 50% 50% 60% 60%/60% 60% 100% 100%; opacity: 0.8; animation: flameFlicker 1.2s infinite alternate;"></div>
+                        <div style="position: absolute; left: 18px; bottom: 8px; width: 24px; height: 18px; background: radial-gradient(ellipse at 50% 80%, #fff8 60%, #ffb300 100%, #fff0 100%); border-radius: 50% 50% 60% 60%/60% 60% 100% 100%; opacity: 0.7; animation: flameFlicker 1.5s infinite alternate 0.5s;"></div>
+                    </div>
+                    <!-- Sci-fi details -->
+                    <div style="position: absolute; left: 50%; top: 10px; transform: translateX(-50%); color: #fff; font-size: 1.5rem; opacity: 0.15;">⚙️</div>
+                    <div style="position: absolute; left: 50%; top: 30px; transform: translateX(-50%); color: #fff; font-size: 1.2rem; opacity: 0.12;">🔩</div>
                 </div>
             </div>
         `;
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pipeGlow {
+                0% { filter: brightness(1); }
+                100% { filter: brightness(1.5) drop-shadow(0 0 12px #ff4e00); }
+            }
+            @keyframes valveGlow {
+                0% { filter: brightness(1); }
+                100% { filter: brightness(1.7) drop-shadow(0 0 18px #ff4e00); }
+            }
+            @keyframes coreGlow {
+                0% { opacity: 0.7; filter: blur(2px) brightness(1); }
+                100% { opacity: 1; filter: blur(3px) brightness(1.3); }
+            }
+            @keyframes steamRise {
+                0% { opacity: 0.7; transform: translateY(0) scale(1); }
+                60% { opacity: 0.5; transform: translateY(-20px) scale(1.1); }
+                100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+            }
+            @keyframes flameFlicker {
+                0% { filter: brightness(1) blur(0px); }
+                50% { filter: brightness(1.3) blur(1.5px); }
+                100% { filter: brightness(1.1) blur(0.5px); }
+            }
+        `;
+        document.head.appendChild(style);
         container.appendChild(furnace);
     }
 
     createFurnaceInterior(container) {
         const interior = document.createElement('div');
         interior.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: radial-gradient(circle, #FF4500, #8B0000); border-radius: 15px;">
-                <div style="width: 100px; height: 100px; background: radial-gradient(circle, #FFD700, #FF4500); border-radius: 50%; animation: melt 2s infinite; box-shadow: 0 0 50px #FF4500;">
-                    <div style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem;">🔥</div>
+            <div style="display: flex; justify-content: center; align-items: center; height: 220px; background: linear-gradient(180deg, #2d3748 60%, #8B0000 100%); border-radius: 18px; position: relative; overflow: visible;">
+                <!-- Furnace cutaway body -->
+                <div style="position: relative; width: 140px; height: 140px; background: linear-gradient(180deg, #444 60%, #222 100%); border-radius: 18px 18px 40px 40px/22px 22px 60px 60px; box-shadow: 0 10px 40px #0008, 0 0 0 6px #ff000033 inset; overflow: visible;">
+                    <!-- Molten silicon pool -->
+                    <div style="position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: 90px; height: 32px; background: radial-gradient(ellipse at 50% 60%, #FFD700 60%, #FF4500 100%); border-radius: 50px 50px 40px 40px/30px 30px 60px 60px; box-shadow: 0 0 40px #FFD700, 0 0 80px #FF4500; opacity: 0.85; filter: blur(0.5px);"></div>
+                    <!-- Quartz chunk falling -->
+                    <div style="position: absolute; left: 45px; top: 10px; width: 22px; height: 22px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD 80%, #fff 100%); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); box-shadow: 0 0 8px #fff8; animation: dropQuartz 2.5s infinite;"></div>
+                    <!-- Carbon chunk falling -->
+                    <div style="position: absolute; left: 75px; top: 0px; width: 18px; height: 18px; background: linear-gradient(135deg, #444, #222 80%, #fff2 100%); border-radius: 6px; box-shadow: 0 0 6px #0008; animation: dropCarbon 2.5s infinite 1.2s;"></div>
+                    <!-- Reaction sparks -->
+                    <div style="position: absolute; left: 50%; bottom: 38px; transform: translateX(-50%); width: 60px; height: 30px; pointer-events:none;">
+                        <div style="position: absolute; left: 10px; bottom: 0; width: 8px; height: 8px; background: radial-gradient(circle, #FFD700 60%, #FF4500 100%); border-radius: 50%; opacity: 0.8; animation: spark 1.2s infinite alternate;"></div>
+                        <div style="position: absolute; left: 30px; bottom: 8px; width: 6px; height: 6px; background: radial-gradient(circle, #FFD700 60%, #FF4500 100%); border-radius: 50%; opacity: 0.7; animation: spark 1.5s infinite alternate 0.5s;"></div>
+                        <div style="position: absolute; left: 20px; bottom: 12px; width: 5px; height: 5px; background: radial-gradient(circle, #FFD700 60%, #FF4500 100%); border-radius: 50%; opacity: 0.6; animation: spark 1.1s infinite alternate 0.8s;"></div>
+                    </div>
+                    <!-- Impurities escaping as smoke/gas -->
+                    <div style="position: absolute; left: 60px; top: -30px; width: 24px; height: 40px; z-index: 2;">
+                        <div style="position: absolute; left: 0; top: 0; width: 24px; height: 40px; background: radial-gradient(circle, #fff8 60%, #fff0 100%); border-radius: 50%; opacity: 0.7; animation: smokeRise 2.2s infinite;"></div>
+                        <div style="position: absolute; left: 8px; top: 10px; width: 12px; height: 24px; background: radial-gradient(circle, #b0b0b0 60%, #fff0 100%); border-radius: 50%; opacity: 0.5; animation: smokeRise 2.7s infinite 1.1s;"></div>
+                    </div>
+                    <!-- Furnace wall (cutaway effect) -->
+                    <div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 4px solid #ff4e00; border-radius: 18px 18px 40px 40px/22px 22px 60px 60px; box-sizing: border-box; opacity: 0.3;"></div>
                 </div>
+                <!-- Labels -->
+                <div style="position: absolute; left: 30px; top: 0px; color: #fff; font-size: 0.8rem; background: rgba(0,0,0,0.5); border-radius: 8px; padding: 2px 8px;">Quartz</div>
+                <div style="position: absolute; left: 100px; top: -10px; color: #fff; font-size: 0.8rem; background: rgba(0,0,0,0.5); border-radius: 8px; padding: 2px 8px;">Carbon</div>
+                <div style="position: absolute; left: 60px; top: -40px; color: #fff; font-size: 0.8rem; background: rgba(0,0,0,0.5); border-radius: 8px; padding: 2px 8px;">Impurities</div>
             </div>
         `;
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes dropQuartz {
+                0% { top: 10px; opacity: 1; }
+                30% { top: 60px; opacity: 1; }
+                40% { top: 80px; opacity: 0.7; }
+                100% { top: 80px; opacity: 0; }
+            }
+            @keyframes dropCarbon {
+                0% { top: 0px; opacity: 1; }
+                30% { top: 50px; opacity: 1; }
+                40% { top: 80px; opacity: 0.7; }
+                100% { top: 80px; opacity: 0; }
+            }
+            @keyframes spark {
+                0% { opacity: 0.8; filter: blur(0px); }
+                50% { opacity: 1; filter: blur(1.5px) brightness(1.5); }
+                100% { opacity: 0.5; filter: blur(0.5px); }
+            }
+            @keyframes smokeRise {
+                0% { opacity: 0.7; transform: translateY(0) scale(1); }
+                60% { opacity: 0.5; transform: translateY(-20px) scale(1.1); }
+                100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+            }
+        `;
+        document.head.appendChild(style);
         container.appendChild(interior);
     }
 
     createControlPanel(container) {
         const panel = document.createElement('div');
         panel.innerHTML = `
-            <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #2d3748, #4a5568); border-radius: 15px; position: relative; padding: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);">
-                <div style="display: flex; justify-content: space-around; align-items: center; height: 100%;">
-                    <!-- Temperature Gauge -->
+            <div style="width: 100%; height: 220px; background: linear-gradient(135deg, #232b3a, #3a4660 80%, #1a202c 100%); border-radius: 18px; position: relative; padding: 24px; box-shadow: 0 2px 18px #0008, 0 0 0 6px #48bb7833 inset; overflow: visible;">
+                <div style="display: flex; justify-content: space-around; align-items: flex-end; height: 100%;">
+                    <!-- Temperature Gauge (animated) -->
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="width: 60px; height: 80px; background: #1a202c; border-radius: 10px; position: relative; border: 2px solid #4a5568;">
-                            <div style="position: absolute; bottom: 5px; left: 5px; right: 5px; height: 60%; background: linear-gradient(to top, #e53e3e, #ff6b6b); border-radius: 5px; animation: tempGauge 3s infinite;"></div>
+                        <div style="width: 60px; height: 100px; background: #181e2a; border-radius: 16px; position: relative; border: 2px solid #48bb78; box-shadow: 0 0 18px #48bb7888; overflow: hidden;">
+                            <div style="position: absolute; left: 18px; top: 10px; width: 24px; height: 80px; background: #222; border-radius: 12px; border: 1px solid #48bb78; box-shadow: 0 0 8px #48bb78; overflow: hidden;">
+                                <div class="tempBar" style="position: absolute; left: 0; bottom: 0; width: 100%; height: 60%; background: linear-gradient(to top, #e53e3e, #ffb300 60%, #48bb78 100%); border-radius: 0 0 12px 12px; box-shadow: 0 0 12px #e53e3e; animation: tempBarRise 4s infinite alternate;"></div>
+                                <div class="tempBarOverlay" style="position: absolute; left: 0; bottom: 0; width: 100%; height: 100%; pointer-events:none;"></div>
+                            </div>
+                            <div style="position: absolute; left: 50%; top: 0; transform: translateX(-50%); color: #fff; font-size: 0.7rem;">TEMP</div>
                         </div>
-                        <span style="color: #e2e8f0; font-size: 0.8rem; margin-top: 5px;">TEMP</span>
+                        <span style="color: #48bb78; font-size: 0.9rem; margin-top: 8px; font-family: monospace;">Temperature</span>
                     </div>
-                    
-                    <!-- Pressure Gauge -->
+                    <!-- Pressure Gauge (dial) -->
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="width: 60px; height: 60px; border: 3px solid #4a5568; border-radius: 50%; position: relative; background: #1a202c;">
-                            <div style="position: absolute; top: 50%; left: 50%; width: 2px; height: 20px; background: #48bb78; transform-origin: bottom; transform: translate(-50%, -100%) rotate(45deg); animation: pressureNeedle 2s infinite;"></div>
+                        <div style="width: 70px; height: 70px; border: 3px solid #48bb78; border-radius: 50%; position: relative; background: #181e2a; box-shadow: 0 0 12px #48bb7888;">
+                            <div class="pressureNeedle" style="position: absolute; top: 50%; left: 50%; width: 4px; height: 28px; background: linear-gradient(180deg, #48bb78 60%, #fff0 100%); border-radius: 2px; transform-origin: bottom; transform: translate(-50%, -100%) rotate(45deg); animation: pressureNeedleMove 4s infinite alternate;"></div>
+                            <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; background: #48bb78; border-radius: 50%; box-shadow: 0 0 8px #48bb78; border: 2px solid #fff2;"></div>
                         </div>
-                        <span style="color: #e2e8f0; font-size: 0.8rem; margin-top: 5px;">PRESSURE</span>
+                        <span style="color: #48bb78; font-size: 0.9rem; margin-top: 8px; font-family: monospace;">Pressure</span>
                     </div>
-                    
-                    <!-- Control Buttons -->
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <div style="width: 40px; height: 40px; background: #48bb78; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: controlBlink 1.5s infinite; box-shadow: 0 0 15px rgba(72, 187, 120, 0.5);">
-                            <span style="color: white; font-weight: bold; font-size: 0.8rem;">ON</span>
+                    <!-- Futuristic Buttons -->
+                    <div style="display: flex; flex-direction: column; gap: 12px; align-items: center;">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #48bb78, #38a169); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 18px #48bb78; animation: controlBlink 1.5s infinite; cursor: pointer;">
+                            <span style="color: white; font-weight: bold; font-size: 1.1rem;">ON</span>
                         </div>
-                        <div style="width: 40px; height: 40px; background: #e53e3e; border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0.3;">
-                            <span style="color: white; font-weight: bold; font-size: 0.7rem;">OFF</span>
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #e53e3e, #ffb300); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0.5; box-shadow: 0 0 8px #e53e3e; cursor: pointer;">
+                            <span style="color: white; font-weight: bold; font-size: 1.1rem;">OFF</span>
                         </div>
                     </div>
-                    
                     <!-- Status Display -->
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div style="width: 80px; height: 40px; background: #1a202c; border: 1px solid #4a5568; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-family: monospace;">
-                            <span style="color: #48bb78; font-size: 0.9rem; animation: statusBlink 2s infinite;">ACTIVE</span>
+                        <div style="width: 100px; height: 48px; background: #181e2a; border: 2px solid #48bb78; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: monospace; box-shadow: 0 0 8px #48bb78;">
+                            <span class="statusText" style="color: #48bb78; font-size: 1.1rem; animation: statusBlink 2s infinite;">ACTIVE</span>
                         </div>
-                        <span style="color: #e2e8f0; font-size: 0.8rem; margin-top: 5px;">STATUS</span>
+                        <span style="color: #48bb78; font-size: 0.9rem; margin-top: 8px; font-family: monospace;">Status</span>
                     </div>
                 </div>
-                
-                <!-- Warning Lights -->
-                <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
-                    <div style="width: 8px; height: 8px; background: #48bb78; border-radius: 50%; animation: warningLight1 1s infinite;"></div>
-                    <div style="width: 8px; height: 8px; background: #ed8936; border-radius: 50%; animation: warningLight2 1.5s infinite;"></div>
-                    <div style="width: 8px; height: 8px; background: #e53e3e; border-radius: 50%; animation: warningLight3 2s infinite;"></div>
+                <!-- Animated warning lights -->
+                <div style="position: absolute; top: 18px; right: 24px; display: flex; gap: 10px;">
+                    <div class="warningLightHot" style="width: 18px; height: 18px; background: #e53e3e; border-radius: 50%; box-shadow: 0 0 18px #e53e3e; animation: warningHot 4s infinite;"></div>
+                    <div class="warningLightCold" style="width: 18px; height: 18px; background: #4299e1; border-radius: 50%; box-shadow: 0 0 18px #4299e1; animation: warningCold 4s infinite 2s;"></div>
                 </div>
             </div>
         `;
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes tempBarRise {
+                0% { height: 30%; background: linear-gradient(to top, #4299e1, #48bb78 60%, #ffb300 100%); }
+                40% { height: 60%; background: linear-gradient(to top, #e53e3e, #ffb300 60%, #48bb78 100%); }
+                60% { height: 90%; background: linear-gradient(to top, #e53e3e, #ffb300 60%, #48bb78 100%); }
+                80% { height: 60%; background: linear-gradient(to top, #e53e3e, #ffb300 60%, #48bb78 100%); }
+                100% { height: 30%; background: linear-gradient(to top, #4299e1, #48bb78 60%, #ffb300 100%); }
+            }
+            @keyframes pressureNeedleMove {
+                0% { transform: translate(-50%, -100%) rotate(30deg); }
+                50% { transform: translate(-50%, -100%) rotate(90deg); }
+                100% { transform: translate(-50%, -100%) rotate(45deg); }
+            }
+            @keyframes controlBlink {
+                0%, 100% { filter: brightness(1); }
+                50% { filter: brightness(1.5) drop-shadow(0 0 12px #48bb78); }
+            }
+            @keyframes statusBlink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+            @keyframes warningHot {
+                0%, 60%, 100% { opacity: 0.2; filter: blur(0px); }
+                20%, 40% { opacity: 1; filter: blur(2px) brightness(1.5); }
+            }
+            @keyframes warningCold {
+                0%, 60%, 100% { opacity: 0.2; filter: blur(0px); }
+                20%, 40% { opacity: 1; filter: blur(2px) brightness(1.5); }
+            }
+        `;
+        document.head.appendChild(style);
         container.appendChild(panel);
     }
 
     createMoltenSilicon(container) {
         const molten = document.createElement('div');
         molten.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: radial-gradient(circle, #FF6B35, #FF4500, #8B0000); border-radius: 15px; position: relative; overflow: hidden;">
-                <div style="width: 120px; height: 120px; background: radial-gradient(circle, #FFD700, #FF6B35); border-radius: 50%; animation: moltenBubble 3s infinite; position: relative;">
-                    <div style="position: absolute; top: 20%; left: 20%; width: 20px; height: 20px; background: #FFFF00; border-radius: 50%; animation: bubble1 2s infinite;"></div>
-                    <div style="position: absolute; top: 60%; right: 25%; width: 15px; height: 15px; background: #FFA500; border-radius: 50%; animation: bubble2 2.5s infinite;"></div>
-                    <div style="position: absolute; bottom: 30%; left: 50%; width: 18px; height: 18px; background: #FF4500; border-radius: 50%; animation: bubble3 1.8s infinite;"></div>
+            <div style="display: flex; justify-content: center; align-items: center; height: 220px; background: linear-gradient(180deg, #2d3748 60%, #8B0000 100%); border-radius: 18px; position: relative; overflow: visible;">
+                <!-- Crucible -->
+                <div style="position: relative; width: 140px; height: 140px; background: linear-gradient(180deg, #444 60%, #222 100%); border-radius: 50% 50% 40px 40px/50% 50% 60px 60px; box-shadow: 0 10px 40px #0008, 0 0 0 6px #ff000033 inset; overflow: visible;">
+                    <!-- Molten silicon bath with reflections -->
+                    <div style="position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: 100px; height: 38px; background: radial-gradient(ellipse at 50% 60%, #FFD700 60%, #FF6B35 100%, #FF4500 100%); border-radius: 50px 50px 40px 40px/30px 30px 60px 60px; box-shadow: 0 0 40px #FFD700, 0 0 80px #FF4500; opacity: 0.95; filter: blur(0.5px); z-index:2;"></div>
+                    <!-- Reflections -->
+                    <div style="position: absolute; left: 60px; bottom: 38px; width: 30px; height: 10px; background: linear-gradient(90deg, #fff8 60%, #fff0 100%); border-radius: 8px; opacity: 0.5; filter: blur(1px); z-index:3; animation: reflectionMove 3s infinite alternate;"></div>
+                    <!-- Robotic arm dipping seed crystal -->
+                    <div style="position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 16px; height: 110px; z-index: 4;">
+                        <!-- Arm -->
+                        <div style="position: absolute; left: 6px; top: 0; width: 4px; height: 80px; background: linear-gradient(180deg, #bbb 60%, #888 100%); border-radius: 2px; box-shadow: 0 0 8px #fff8; animation: armDip 4s infinite alternate;"></div>
+                        <!-- Seed crystal -->
+                        <div style="position: absolute; left: 0px; top: 80px; width: 16px; height: 24px; background: linear-gradient(45deg, #E6E6FA, #DDA0DD 80%, #fff 100%); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); box-shadow: 0 0 8px #fff8; animation: seedDip 4s infinite alternate;"></div>
+                    </div>
                 </div>
-                <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: white; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">🌡️ 1414°C</div>
+                <!-- Temperature label -->
+                <div style="position: absolute; top: 18px; left: 50%; transform: translateX(-50%); color: #fff; font-weight: bold; text-shadow: 2px 2px 4px #0008; font-size: 1.1rem; background: rgba(0,0,0,0.4); border-radius: 8px; padding: 4px 16px;">🌡️ 1414°C</div>
             </div>
         `;
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes reflectionMove {
+                0% { left: 60px; opacity: 0.5; }
+                100% { left: 80px; opacity: 0.8; }
+            }
+            @keyframes armDip {
+                0% { height: 60px; }
+                100% { height: 80px; }
+            }
+            @keyframes seedDip {
+                0% { top: 60px; }
+                100% { top: 80px; }
+            }
+        `;
+        document.head.appendChild(style);
         container.appendChild(molten);
     }
 
@@ -644,7 +907,7 @@ class SilicoQuestApp {
                     <div style="position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 2px; height: 40px; background: #708090; animation: pulling 3s infinite;"></div>
                 </div>
                 
-                <div style="position: absolute; top: 10px; right: 10px; color: #E6E6FA; font-size: 0.8rem; text-align: right;">
+                <div style="position: absolute; top: 10px; left: 100px; color: #E6E6FA; font-size: 0.8rem; text-align: right;">
                     <div>🔄 Czochralski Process</div>
                     <div style="margin-top: 5px;">⬆️ Pulling Speed: 2mm/min</div>
                 </div>
@@ -672,7 +935,7 @@ class SilicoQuestApp {
                 </div>
                 
                 <!-- Control panel -->
-                <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px; color: white; font-size: 0.8rem;">
+                <div style="position: absolute; top: 10px; left: 100px; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px; color: white; font-size: 0.8rem;">
                     <div>🔄 Rotation: <span style="color: #48bb78;">15 RPM</span></div>
                     <div>⬆️ Pull Rate: <span style="color: #48bb78;">2.5 mm/min</span></div>
                     <div>🌡️ Temp: <span style="color: #e53e3e;">1420°C</span></div>
@@ -717,33 +980,33 @@ class SilicoQuestApp {
     createWaferSlicing(container) {
         const slicing = document.createElement('div');
         slicing.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #2d3748, #4a5568); border-radius: 15px; position: relative; overflow: hidden;">
-                <div style="position: relative;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 200px; width: 450px background: linear-gradient(135deg, #1a202c, #2d3748); border-radius: 15px; position: relative;">
+                <div style="position: relative; perspective: 800px;">
                     <!-- Silicon ingot being sliced -->
-                    <div style="width: 60px; height: 120px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 30px; position: relative;">
+                    <div style="width: 60px; height: 120px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 30px; position: relative; transform-style: preserve-3d; animation: rotateIngot 10s infinite linear;">
                         <!-- Cutting lines -->
-                        <div style="position: absolute; top: 20%; left: -10px; right: -10px; height: 1px; background: #FFD700; box-shadow: 0 0 10px #FFD700; animation: cuttingLine 2s infinite;"></div>
-                        <div style="position: absolute; top: 35%; left: -10px; right: -10px; height: 1px; background: #FFD700; box-shadow: 0 0 10px #FFD700; animation: cuttingLine 2s infinite 0.3s;"></div>
-                        <div style="position: absolute; top: 50%; left: -10px; right: -10px; height: 1px; background: #FFD700; box-shadow: 0 0 10px #FFD700; animation: cuttingLine 2s infinite 0.6s;"></div>
-                        <div style="position: absolute; top: 65%; left: -10px; right: -10px; height: 1px; background: #FFD700; box-shadow: 0 0 10px #FFD700; animation: cuttingLine 2s infinite 0.9s;"></div>
-                        <div style="position: absolute; top: 80%; left: -10px; right: -10px; height: 1px; background: #FFD700; box-shadow: 0 0 10px #FFD700; animation: cuttingLine 2s infinite 1.2s;"></div>
+                        <div style="position: absolute; top: 20%; left: -10px; right: -10px; height: 2px; background: #FFD700; box-shadow: 0 0 12px #FFD700; animation: cuttingLine 2.5s infinite;"></div>
+                        <div style="position: absolute; top: 35%; left: -10px; right: -10px; height: 2px; background: #FFD700; box-shadow: 0 0 12px #FFD700; animation: cuttingLine 2.5s infinite 0.4s;"></div>
+                        <div style="position: absolute; top: 50%; left: -10px; right: -10px; height: 2px; background: #FFD700; box-shadow: 0 0 12px #FFD700; animation: cuttingLine 2.5s infinite 0.8s;"></div>
+                        <div style="position: absolute; top: 65%; left: -10px; right: -10px; height: 2px; background: #FFD700; box-shadow: 0 0 12px #FFD700; animation: cuttingLine 2.5s infinite 1.2s;"></div>
+                        <div style="position: absolute; top: 80%; left: -10px; right: -10px; height: 2px; background: #FFD700; box-shadow: 0 0 12px #FFD700; animation: cuttingLine 2.5s infinite 1.6s;"></div>
                     </div>
                     
-                    <!-- Diamond wire saw -->
-                    <div style="position: absolute; left: -20px; top: 50%; width: 100px; height: 2px; background: linear-gradient(to right, transparent, #FFD700, transparent); animation: sawMovement 1.5s infinite;"></div>
-                    
+                    <!-- Laser beam -->
+                    <div style="position: absolute; left: -100px; top: 50%; width: 200px; height: 4px; background: linear-gradient(to right, transparent, #ff00ff, transparent); animation: laserBeam 2s infinite;"></div>
+
                     <!-- Sliced wafers -->
-                    <div style="position: absolute; right: -80px; top: 20%; display: flex; flex-direction: column; gap: 3px;">
-                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3s infinite;"></div>
-                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3s infinite 0.5s;"></div>
-                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3s infinite 1s;"></div>
-                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3s infinite 1.5s;"></div>
+                    <div style="position: absolute; right: -120px; top: 20%; display: flex; flex-direction: column; gap: 5px; animation: floatWafers 5s infinite ease-in-out;">
+                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3.5s infinite;"></div>
+                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3.5s infinite 0.6s;"></div>
+                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3.5s infinite 1.2s;"></div>
+                        <div style="width: 50px; height: 8px; background: linear-gradient(to right, #E6E6FA, #DDA0DD); border-radius: 25px; animation: waferSlide 3.5s infinite 1.8s;"></div>
                     </div>
                 </div>
                 
-                <div style="position: absolute; top: 10px; left: 10px; color: white; font-size: 0.8rem; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 5px;">
+                <div style="position: absolute; bottom: 10px; right: 150px; transform: translateX(-50%); color: #e2e8f0; font-size: 0.8rem; text-align: center; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px;">
                     <div>💎 Diamond Wire Saw</div>
-                    <div style="margin-top: 3px;">⚡ 0.1mm thickness</div>
+                    <div font-size: 0.7rem; margin-top: 2px;">⚡ 0.1mm thickness</div>
                 </div>
             </div>
         `;
@@ -776,7 +1039,7 @@ class SilicoQuestApp {
                     <div style="position: absolute; top: 60%; right: -15px; color: #FFD700; font-size: 1rem; animation: sparkle 1.5s infinite 1s;">✨</div>
                 </div>
                 
-                <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: #e2e8f0; font-size: 0.8rem; text-align: center; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px;">
+                <div style="position: absolute; bottom: 10px; left: 180px; transform: translateX(-50%); color: #e2e8f0; font-size: 0.8rem; text-align: center; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px;">
                     <div>🪞 Mirror Polish</div>
                     <div style="font-size: 0.7rem; margin-top: 2px;">Surface roughness: &lt;0.1nm</div>
                 </div>
@@ -808,9 +1071,9 @@ class SilicoQuestApp {
                     </div>
                     
                     <!-- Quality metrics -->
-                    <div style="position: absolute; right: -100px; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                    <div style="position: absolute; left: 180px; top: 50%; transform: translateY(-50%); background: #2d3748; padding: 10px; border-radius: 8px; font-size: 0.8rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
                         <div style="color: #48bb78; font-weight: bold;">✅ Quality Check</div>
-                        <div style="margin-top: 5px; color: #4a5568;">
+                        <div style="margin-top: 5px; color: #eff0f2ff;">
                             <div>🪞 Surface: Perfect</div>
                             <div>🧹 Particles: 0</div>
                             <div>📏 Flatness: ±0.1μm</div>
@@ -872,7 +1135,7 @@ class SilicoQuestApp {
     createPhotolithography(container) {
         const photo = document.createElement('div');
         photo.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #2d3748, #4a5568); border-radius: 15px; position: relative; overflow: hidden;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #2d3748, #4a5568); border-radius: 15px; position: relative;">
                 <div style="position: relative;">
                     <!-- UV Light source -->
                     <div style="position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 80px; height: 20px; background: linear-gradient(to bottom, #9f7aea, #805ad5); border-radius: 10px; animation: uvLight 2s infinite;">
@@ -899,7 +1162,7 @@ class SilicoQuestApp {
                     <div style="width: 140px; height: 10px; background: radial-gradient(ellipse, #E6E6FA, #DDA0DD); border-radius: 5px; margin-top: 2px; animation: waferBase 2s infinite;"></div>
                 </div>
                 
-                <div style="position: absolute; top: 10px; left: 10px; color: white; font-size: 0.8rem; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 5px;">
+                <div style="position: absolute; top: 10px; left: 180px; color: white; font-size: 0.8rem; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 5px;">
                     <div>💜 UV Lithography</div>
                     <div style="margin-top: 3px;">📐 Pattern Transfer</div>
                 </div>
@@ -973,105 +1236,99 @@ class SilicoQuestApp {
     createALUCircuit(container) {
         const alu = document.createElement('div');
         alu.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #1a202c, #2d3748); border-radius: 15px; position: relative; padding: 15px;">
-                <div style="position: relative; width: 100%; height: 100%;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 250px; background: linear-gradient(135deg, #1a202c, #2d3748); border-radius: 15px; position: relative; padding: 20px; perspective: 1000px;">
+                <div style="position: relative; width: 100%; height: 100%; transform-style: preserve-3d; animation: rotateScene 30s infinite linear;">
                     <!-- Input A -->
-                    <div style="position: absolute; left: 10px; top: 20%; color: #48bb78; font-size: 0.8rem; font-weight: bold;">
+                    <div style="position: absolute; left: 40px; top: 25%; color: #079442ff; font-size: 0.9rem; font-weight: bold; transform: translateZ(50px);">
                         A: 1011
-                        <div style="width: 30px; height: 2px; background: #48bb78; margin-top: 5px; animation: dataFlow 2s infinite;"></div>
+                        <div style="width: 40px; height: 3px; background: #079442ff; margin-top: 5px; animation: dataFlow 2.5s infinite;"></div>
                     </div>
                     
                     <!-- Input B -->
-                    <div style="position: absolute; left: 10px; bottom: 20%; color: #4299e1; font-size: 0.8rem; font-weight: bold;">
+                    <div style="position: absolute; left: 40px; bottom: 30%; color: #095694ff; font-size: 0.9rem; font-weight: bold; transform: translateZ(50px);">
                         B: 0110
-                        <div style="width: 30px; height: 2px; background: #4299e1; margin-top: 5px; animation: dataFlow 2s infinite 0.5s;"></div>
+                        <div style="width: 40px; height: 3px; background: #095694ff; margin-top: 5px; animation: dataFlow 2.5s infinite 0.5s;"></div>
                     </div>
                     
                     <!-- ALU Core -->
-                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 80px; height: 60px; background: linear-gradient(135deg, #805ad5, #9f7aea); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; animation: aluProcessing 3s infinite; box-shadow: 0 0 20px rgba(128, 90, 213, 0.5);">
+                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateZ(20px); width: 100px; height: 80px; background: linear-gradient(135deg, #805ad5, #9f7aea); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; animation: aluProcessing 3.5s infinite; box-shadow: 0 0 30px rgba(128, 90, 213, 0.7);">
                         ALU
-                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: #e2e8f0;">Arithmetic Logic Unit</div>
                     </div>
                     
                     <!-- Operation Control -->
-                    <div style="position: absolute; left: 50%; top: 10%; transform: translateX(-50%); color: #ed8936; font-size: 0.7rem; text-align: center;">
+                    <div style="position: absolute; left: 50%; top: 2%; transform: translateX(-50%) translateZ(30px); color: #ed8936; font-size: 0.8rem; text-align: center;">
                         <div>Operation: ADD</div>
-                        <div style="width: 2px; height: 20px; background: #ed8936; margin: 5px auto; animation: controlSignal 2s infinite;"></div>
+                        <div style="width: 3px; height: 25px; background: #ed8936; margin: 5px auto; animation: controlSignal 2.5s infinite;"></div>
                     </div>
                     
-                    <!-- Internal Gates -->
-                    <div style="position: absolute; left: 45%; top: 35%; width: 8px; height: 8px; background: #48bb78; border-radius: 2px; animation: internalGate 1.5s infinite;"></div>
-                    <div style="position: absolute; left: 55%; top: 45%; width: 8px; height: 8px; background: #4299e1; border-radius: 2px; animation: internalGate 1.5s infinite 0.3s;"></div>
-                    <div style="position: absolute; left: 50%; top: 55%; width: 8px; height: 8px; background: #ed8936; border-radius: 2px; animation: internalGate 1.5s infinite 0.6s;"></div>
-                    <div style="position: absolute; left: 45%; top: 65%; width: 8px; height: 8px; background: #e53e3e; border-radius: 2px; animation: internalGate 1.5s infinite 0.9s;"></div>
-                    
+                  
                     <!-- Output -->
-                    <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #e53e3e; font-size: 0.8rem; font-weight: bold; text-align: right;">
-                        <div style="width: 30px; height: 2px; background: #e53e3e; margin-bottom: 5px; animation: resultFlow 2s infinite 1.5s;"></div>
+                    <div style="position: absolute; left: -100px; top: 40%; transform: translateY(-50%) translateZ(50px); color: #e53e3e; font-size: 0.9rem; font-weight: bold; text-align: right;">
+                        <div style="width: 40px; height: 3px; background: #e53e3e; margin-bottom: 5px; animation: resultFlow 2.5s infinite 1.8s;"></div>
                         Result: 10001
                     </div>
                     
                     <!-- Connection lines -->
-                    <div style="position: absolute; left: 40px; top: 25%; width: 60px; height: 2px; background: linear-gradient(to right, #48bb78, transparent); animation: connectionFlow 2s infinite;"></div>
-                    <div style="position: absolute; left: 40px; bottom: 25%; width: 60px; height: 2px; background: linear-gradient(to right, #4299e1, transparent); animation: connectionFlow 2s infinite 0.5s;"></div>
-                    <div style="position: absolute; right: 40px; top: 50%; width: 60px; height: 2px; background: linear-gradient(to left, #e53e3e, transparent); animation: connectionFlow 2s infinite 1.5s;"></div>
+                    <div style="position: absolute; left: 60px; top: 35%; width: 80px; height: 3px; background: linear-gradient(to right, #48bb78, transparent); animation: connectionFlow 2.5s infinite;"></div>
+                    <div style="position: absolute; left: 60px; bottom: 35%; width: 80px; height: 3px; background: linear-gradient(to right, #4299e1, transparent); animation: connectionFlow 2.5s infinite 0.5s;"></div>
+                    <div style="position: absolute; right: 60px; top: 50%; width: 80px; height: 3px; background: linear-gradient(to left, #e53e3e, transparent); animation: connectionFlow 2.5s infinite 1.8s;"></div>
                 </div>
             </div>
         `;
         container.appendChild(alu);
     }
-
+    
     createALUConstruction(container) {
         const construction = document.createElement('div');
         construction.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #2d3748, #4a5568); border-radius: 15px; position: relative; padding: 10px;">
-                <div style="position: relative; width: 100%; height: 100%;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 250px; background: linear-gradient(135deg, #1a202c, #2d3748); border-radius: 15px; position: relative; padding: 20px; perspective: 1000px;">
+                <div style="position: relative; width: 100%; height: 100%; transform-style: preserve-3d; animation: rotateScene 30s infinite linear;">
                     <!-- Construction Steps -->
-                    <div style="position: absolute; left: 5%; top: 10%; display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px; animation: constructionStep 4s infinite;">
-                            <div style="width: 20px; height: 15px; background: #4299e1; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.6rem;">AND</div>
-                            <div style="width: 20px; height: 2px; background: #48bb78;"></div>
-                            <div style="color: #e2e8f0; font-size: 0.7rem;">Step 1</div>
+                    <div style="position: absolute; left: 10%; top: 20%; display: flex; flex-direction: column; gap: 15px; transform: translateZ(40px);">
+                        <div style="display: flex; align-items: center; gap: 10px; animation: constructionStep 5s infinite;">
+                            <div style="width: 25px; height: 20px; background: #4299e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem;">AND</div>
+                            <div style="width: 25px; height: 3px; background: #48bb78;"></div>
+                            <div style="color: #e2e8f0; font-size: 0.8rem;">Step 1: Logic Gate</div>
                         </div>
                         
-                        <div style="display: flex; align-items: center; gap: 8px; animation: constructionStep 4s infinite 1s;">
-                            <div style="width: 20px; height: 15px; background: #48bb78; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.6rem;">OR</div>
-                            <div style="width: 20px; height: 2px; background: #4299e1;"></div>
-                            <div style="color: #e2e8f0; font-size: 0.7rem;">Step 2</div>
+                        <div style="display: flex; align-items: center; gap: 10px; animation: constructionStep 5s infinite 1.5s;">
+                            <div style="width: 25px; height: 20px; background: #48bb78; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem;">OR</div>
+                            <div style="width: 25px; height: 3px; background: #4299e1;"></div>
+                            <div style="color: #e2e8f0; font-size: 0.8rem;">Step 2: Adder</div>
                         </div>
                         
-                        <div style="display: flex; align-items: center; gap: 8px; animation: constructionStep 4s infinite 2s;">
-                            <div style="width: 20px; height: 15px; background: #ed8936; clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"></div>
-                            <div style="width: 20px; height: 2px; background: #ed8936;"></div>
-                            <div style="color: #e2e8f0; font-size: 0.7rem;">Step 3</div>
+                        <div style="display: flex; align-items: center; gap: 10px; animation: constructionStep 5s infinite 3s;">
+                            <div style="width: 25px; height: 20px; background: #ed8936; clip-path: polygon(0% 50%, 100% 0%, 100% 100%);"></div>
+                            <div style="width: 25px; height: 3px; background: #ed8936;"></div>
+                            <div style="color: #e2e8f0; font-size: 0.8rem;">Step 3: Control Unit</div>
                         </div>
                     </div>
                     
                     <!-- Assembly Area -->
-                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 100px; height: 80px; border: 2px dashed #805ad5; border-radius: 10px; display: flex; align-items: center; justify-content: center; animation: assemblyArea 3s infinite;">
-                        <div style="color: #805ad5; font-size: 0.8rem; text-align: center;">
-                            <div>🔧 Assembly</div>
-                            <div style="font-size: 0.6rem; margin-top: 3px;">Building ALU...</div>
+                    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateZ(20px); width: 120px; height: 100px; border: 2px dashed #805ad5; border-radius: 15px; display: flex; align-items: center; justify-content: center; animation: assemblyArea 4s infinite;">
+                        <div style="color: #805ad5; font-size: 0.9rem; text-align: center;">
+                            <div>🔧 Assembly Area</div>
+                            <div style="font-size: 0.7rem; margin-top: 5px;">Building ALU...</div>
                         </div>
                     </div>
                     
                     <!-- Completed ALU -->
-                    <div style="position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: 60px; height: 50px; background: linear-gradient(135deg, #805ad5, #9f7aea); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem; animation: completedALU 4s infinite 3s; opacity: 0;">
+                    <div style="position: absolute; right: 10%; top: 50%; transform: translateY(-50%) translateZ(40px); width: 80px; height: 60px; background: linear-gradient(135deg, #805ad5, #9f7aea); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.9rem; animation: completedALU 5s infinite 4s; opacity: 0;">
                         ALU
-                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; color: #e2e8f0; white-space: nowrap;">Complete!</div>
+                        <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: #e2e8f0; white-space: nowrap;">Complete!</div>
                     </div>
                     
                     <!-- Progress indicators -->
-                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px;">
-                        <div style="width: 8px; height: 8px; background: #48bb78; border-radius: 50%; animation: progressDot 4s infinite;"></div>
-                        <div style="width: 8px; height: 8px; background: #4299e1; border-radius: 50%; animation: progressDot 4s infinite 1s;"></div>
-                        <div style="width: 8px; height: 8px; background: #ed8936; border-radius: 50%; animation: progressDot 4s infinite 2s;"></div>
-                        <div style="width: 8px; height: 8px; background: #805ad5; border-radius: 50%; animation: progressDot 4s infinite 3s;"></div>
+                    <div style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px;">
+                        <div style="width: 10px; height: 10px; background: #48bb78; border-radius: 50%; animation: progressDot 5s infinite;"></div>
+                        <div style="width: 10px; height: 10px; background: #4299e1; border-radius: 50%; animation: progressDot 5s infinite 1.5s;"></div>
+                        <div style="width: 10px; height: 10px; background: #ed8936; border-radius: 50%; animation: progressDot 5s infinite 3s;"></div>
+                        <div style="width: 10px; height: 10px; background: #805ad5; border-radius: 50%; animation: progressDot 5s infinite 4.5s;"></div>
                     </div>
                     
                     <!-- Tools -->
-                    <div style="position: absolute; top: 10px; right: 10px; color: #e2e8f0; font-size: 1.2rem; animation: tools 2s infinite;">🔧</div>
-                    <div style="position: absolute; top: 30px; right: 30px; color: #e2e8f0; font-size: 1rem; animation: tools 2s infinite 0.5s;">⚡</div>
+                    <div style="position: absolute; top: 15px; right: 15px; color: #e2e8f0; font-size: 1.5rem; animation: tools 2.5s infinite;">🔧</div>
+                    <div style="position: absolute; top: 40px; right: 40px; color: #e2e8f0; font-size: 1.2rem; animation: tools 2.5s infinite 0.5s;">⚡</div>
                 </div>
             </div>
         `;
@@ -1221,7 +1478,7 @@ class SilicoQuestApp {
     createJourneyRecap(container) {
         const recap = document.createElement('div');
         recap.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #f7fafc, #edf2f7); border-radius: 15px; position: relative; padding: 15px; overflow: hidden;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #f7fafc, #edf2f7); border-radius: 15px; position: relative; padding: 15px;">
                 <div style="position: relative; width: 100%; height: 100%;">
                     <!-- Journey timeline -->
                     <div style="position: absolute; left: 50%; top: 10%; bottom: 10%; width: 3px; background: linear-gradient(to bottom, #f4a460, #805ad5); border-radius: 2px;"></div>
@@ -1253,12 +1510,12 @@ class SilicoQuestApp {
                     </div>
                     
                     <!-- Achievement badge -->
-                    <div style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #744210; padding: 8px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; animation: achievementBadge 2s infinite; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);">
+                    <div style="position: absolute; top: 10px; left: 100px; background: linear-gradient(135deg, #ffd700, #ffed4e); color: #744210; padding: 8px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; animation: achievementBadge 2s infinite; box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);">
                         🏆 Journey Complete!
                     </div>
                     
                     <!-- Progress indicator -->
-                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: #4a5568; font-size: 0.8rem; text-align: center;">
+                    <div style="position: absolute; bottom: 10px; right: 100px; transform: translateX(-50%); color: #4a5568; font-size: 0.8rem; text-align: center;">
                         <div>📈 From Sand to Silicon Brain</div>
                         <div style="font-size: 0.7rem; margin-top: 2px;">You've mastered the complete process!</div>
                     </div>
@@ -1331,7 +1588,7 @@ class SilicoQuestApp {
                     </div>
                 </div>
                 
-                <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: #e2e8f0; font-size: 0.8rem; text-align: center;">
+                <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); color: #e2e8f0; font-size: 0.8rem; text-align: center;">
                     <div>🌍 Silicon Powers Our World</div>
                     <div style="font-size: 0.7rem; margin-top: 2px;">From phones to rockets - everywhere!</div>
                 </div>
@@ -1343,7 +1600,7 @@ class SilicoQuestApp {
     createCelebration(container) {
         const celebration = document.createElement('div');
         celebration.innerHTML = `
-            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); border-radius: 15px; position: relative; padding: 15px; overflow: hidden;">
+            <div style="display: flex; justify-content: center; align-items: center; height: 200px; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); border-radius: 15px; position: relative; padding: 15px;">
                 <div style="position: relative; width: 100%; height: 100%;">
                     <!-- Confetti -->
                     <div style="position: absolute; top: 10%; left: 20%; color: #e53e3e; font-size: 1.5rem; animation: confetti1 3s infinite;">🎉</div>
@@ -1375,11 +1632,6 @@ class SilicoQuestApp {
                     <div style="position: absolute; bottom: 30%; left: 25%; width: 18px; height: 18px; background: radial-gradient(circle, #48bb78, transparent); border-radius: 50%; animation: firework3 4s infinite 2s;"></div>
                     <div style="position: absolute; bottom: 20%; right: 30%; width: 22px; height: 22px; background: radial-gradient(circle, #805ad5, transparent); border-radius: 50%; animation: firework4 4s infinite 3s;"></div>
                     
-                    <!-- Success message -->
-                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: #744210; font-size: 0.8rem; text-align: center; font-weight: bold;">
-                        <div>🎓 You've mastered the journey from sand to silicon!</div>
-                        <div style="font-size: 0.7rem; margin-top: 2px;">Ready to claim your certificate?</div>
-                    </div>
                 </div>
             </div>
         `;

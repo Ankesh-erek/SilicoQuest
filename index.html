@@ -6,8 +6,66 @@
     <title>SilicoQuest: The Rock That Became a Brain</title>
     <link rel="stylesheet" href="main.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 </head>
 <body>
+<style>
+  .falling-crystal {
+    position: absolute;
+    top: -60px;
+    left: calc(10% + 80% * var(--rand-x));
+    font-size: 2.5rem;
+    opacity: 0.85;
+    animation: fall-crystal 2.5s cubic-bezier(0.4,0.7,0.2,1) forwards;
+    filter: drop-shadow(0 0 8px #b19cd9);
+    z-index: 1000;
+  }
+  @keyframes fall-crystal {
+    0% { top: -60px; opacity: 0.7; }
+    80% { opacity: 1; }
+    100% { top: 70vh; opacity: 0.95; }
+  }
+  .crystal-sparkle {
+    position: absolute;
+    width: 18px; height: 18px;
+    pointer-events: none;
+    background: radial-gradient(circle, #fff 60%, #b19cd9 100%);
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: sparkle 1.2s linear infinite;
+  }
+  @keyframes sparkle {
+    0% { opacity: 0.7; transform: scale(0.7); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0.7; transform: scale(0.7); }
+  }
+</style>
+<script>
+function spawnFallingCrystals() {
+  for (let i = 0; i < 7; i++) {
+    setTimeout(() => {
+      const crystal = document.createElement('div');
+      crystal.className = 'falling-crystal';
+      crystal.style.setProperty('--rand-x', Math.random());
+      crystal.textContent = ['💎','🔷','💠','🔹'][Math.floor(Math.random()*4)];
+      document.body.appendChild(crystal);
+      // Sparkle
+      for (let j = 0; j < 2; j++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'crystal-sparkle';
+        sparkle.style.left = (Math.random()*30+10)+'px';
+        sparkle.style.top = (Math.random()*30+10)+'px';
+        crystal.appendChild(sparkle);
+      }
+      setTimeout(() => crystal.remove(), 2600);
+    }, i*350);
+  }
+}
+// Trigger on stage 1 load (example: call spawnFallingCrystals() when stage 1 starts)
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(spawnFallingCrystals, 800);
+});
+</script>
     <!-- Welcome Popup -->
     <div id="welcomePopup" class="popup-overlay">
         <div class="popup-content">
@@ -111,6 +169,48 @@
             <div class="visual-stage" id="visualStage">
                 <div class="stage-content" id="stageContent">
                     <!-- Dynamic visual content will be loaded here -->
+                    <div id="desertCartoonStage1" style="display:flex;justify-content:center;align-items:center;height:320px;">
+                      <svg width="340" height="220" viewBox="0 0 340 220">
+                        <!-- Sand Dune -->
+                        <ellipse cx="170" cy="200" rx="140" ry="30" fill="#f7e9b0"/>
+                        <ellipse cx="120" cy="210" rx="60" ry="15" fill="#f2d16b"/>
+                        <ellipse cx="220" cy="210" rx="50" ry="12" fill="#e6c15a"/>
+                        <!-- Smiling Quartz Crystal -->
+                        <g id="crystal">
+                          <polygon points="170,120 185,180 170,200 155,180" fill="#e6e6fa" stroke="#b19cd9" stroke-width="3"/>
+                          <polygon points="170,120 175,170 170,200 165,170" fill="#b19cd9" stroke="#b19cd9" stroke-width="2" opacity="0.7"/>
+                          <ellipse cx="170" cy="170" rx="7" ry="12" fill="#fff" opacity="0.5"/>
+                          <!-- Face -->
+                          <ellipse cx="170" cy="175" rx="7" ry="4" fill="#fff"/>
+                          <ellipse cx="167" cy="175" rx="1.2" ry="1.2" fill="#222"/>
+                          <ellipse cx="173" cy="175" rx="1.2" ry="1.2" fill="#222"/>
+                          <path d="M168 179 Q170 181 172 179" stroke="#222" stroke-width="1.2" fill="none"/>
+                        </g>
+                        <!-- Sparkle -->
+                        <g id="sparkle">
+                          <circle cx="170" cy="130" r="4" fill="#fff" opacity="0.8">
+                            <animate attributeName="opacity" values="0.8;0.2;0.8" dur="1.2s" repeatCount="indefinite"/>
+                          </circle>
+                          <circle cx="180" cy="140" r="2" fill="#fff" opacity="0.7">
+                            <animate attributeName="opacity" values="0.7;0.1;0.7" dur="1.1s" repeatCount="indefinite"/>
+                          </circle>
+                        </g>
+                        <!-- Silico Mascot Waving -->
+                        <g id="silicoMascot">
+                          <ellipse cx="70" cy="170" rx="18" ry="22" fill="#b3e0f7"/>
+                          <ellipse cx="70" cy="160" rx="10" ry="7" fill="#fff"/>
+                          <ellipse cx="65" cy="165" rx="2.2" ry="2.2" fill="#222"/>
+                          <ellipse cx="75" cy="165" rx="2.2" ry="2.2" fill="#222"/>
+                          <path d="M68 175 Q70 178 72 175" stroke="#222" stroke-width="1.2" fill="none"/>
+                          <!-- Waving hand -->
+                          <g>
+                            <ellipse id="hand" cx="55" cy="155" rx="5" ry="2.5" fill="#b3e0f7">
+                              <animateTransform attributeName="transform" type="rotate" from="0 55 155" to="-30 55 155" dur="0.7s" repeatCount="indefinite"/>
+                            </ellipse>
+                          </g>
+                        </g>
+                      </svg>
+                    </div>
                 </div>
             </div>
 
@@ -152,20 +252,34 @@
                 </div>
                 <div class="certificate" id="certificate" style="order: 2;">
                     <div class="certificate-header">
-                        <h1>🎓 Certificate of Completion</h1>
-                        <h2>SilicoQuest: The Rock That Became a Brain</h2>
+                        <img src="assets/images/jigyasa_logo.png" alt="CSIR Logo" class="certificate-logo">
+                        <div class="certificate-title">
+                            <h1>Certificate of Completion</h1>
+                            <h2>SilicoQuest: The Rock That Became a Brain</h2>
+                        </div>
                     </div>
                     <div class="certificate-body">
                         <p>This certifies that</p>
                         <h3 id="studentName">[Enter your name above]</h3>
-                        <p>has successfully completed the SilicoQuest journey</p>
-                        <p>and learned how silicon transforms from sand to the brain of computers</p>
+                        <p>has successfully completed the SilicoQuest journey and learned how silicon transforms from sand to the brain of computers.</p>
                         <div class="certificate-date">
                             <p>Completed on: <span id="completionDate"></span></p>
                         </div>
-                        <div class="certificate-signature">
-                            <p>CSIR Jigyasa Science Outreach Program</p>
+                    </div>
+                    <div class="certificate-footer">
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <p class="signature-title">Program Coordinator</p>
                         </div>
+                        <div class="signature-block">
+                            <div class="signature-line"></div>
+                            <p class="signature-title">Lead Scientist</p>
+                        </div>
+                        <div class="certificate-seal">
+                            <img src="assets/images/jigyasa_seal.png" alt="Jigyasa Seal">
+                        </div>
+                    </div>
+                        <div class="certificate-ribbon"></div>
                     </div>
                 </div>
             </div>
