@@ -1300,27 +1300,26 @@ body::before {
 }
 
 .signature-block {
-    width: 40%;
-    text-align: center;
+       display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .signature-line {
-    border-top: 2px solid #333;
-    margin-bottom: 0.5rem;
+    width: 150px;
+    border-top: 2px solid #000;
+    margin-bottom: 8px;
+
 }
 
 .signature-title {
-    font-size: 1rem;
-    color: #5a5a5a;
-    font-family: 'Georgia', serif;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .certificate-seal {
-    position: absolute;
-    bottom: 2rem;
-    right: 2rem;
-    width: 120px;
-    height: 120px;
+    height: 80px;
+    width: auto;
 }
 
 .certificate-seal img {
