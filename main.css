@@ -32,6 +32,12 @@ body {
     margin: 0;
     padding: 0;
     position: relative;
+    animation: backgroundPulse 10s infinite alternate;
+}
+
+@keyframes backgroundPulse {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.2); }
 }
 
 /* Animated Background Particles */
@@ -49,6 +55,24 @@ body::before {
     animation: backgroundFloat 20s ease-in-out infinite;
     pointer-events: none;
     z-index: -1;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>') repeat;
+    animation: starTwinkle 5s infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes starTwinkle {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.3; }
 }
 
 @keyframes backgroundFloat {
@@ -143,6 +167,20 @@ body::before {
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
     transition: var(--transition);
+}
+
+.silico-character:hover {
+    animation: rainbowGlow 2s infinite alternate;
+}
+
+@keyframes rainbowGlow {
+    0% { box-shadow: 0 0 20px #ff0000; }
+    16% { box-shadow: 0 0 20px #ff9900; }
+    33% { box-shadow: 0 0 20px #ffff00; }
+    50% { box-shadow: 0 0 20px #00ff00; }
+    66% { box-shadow: 0 0 20px #0000ff; }
+    83% { box-shadow: 0 0 20px #9900ff; }
+    100% { box-shadow: 0 0 20px #ff0000; }
 }
 
 .silico-character:hover {
@@ -1215,6 +1253,13 @@ body::before {
     justify-content: center;
     background-image: url('assets/images/certificate-bg.png'); /* Subtle background pattern */
     background-size: cover;
+    animation: certificateShine 5s infinite;
+}
+
+@keyframes certificateShine {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .certificate::before {

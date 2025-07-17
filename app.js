@@ -203,6 +203,36 @@ class SilicoQuestApp {
 
         // Load first narration stage
         this.loadNarrationStage(chapter.narration[0]);
+        
+        // Trigger chapter-specific animation
+        setTimeout(() => {
+        switch (chapterNumber) {
+        case 1:
+        spawnFallingCrystals();
+        break;
+        case 2:
+        spawnFallingFire();
+        break;
+        case 3:
+        spawnRisingBubbles();
+        break;
+        case 4:
+        spawnFallingSparks();
+        break;
+        case 5:
+        spawnElectricZaps();
+        break;
+        case 6:
+        spawnWireConnections();
+        break;
+        case 7:
+        spawnFallingCode();
+        break;
+        case 8:
+        spawnConfetti();
+        break;
+        }
+        }, 800);
 
         // Update navigation buttons
         this.updateNavigationButtons();
@@ -382,6 +412,10 @@ class SilicoQuestApp {
                 <div style="position: absolute; bottom: 30px; left: 200px; color: #FFD700; font-size: 1.4rem; animation: sparkleFloat 1.5s infinite 1.4s;">✨</div>
                 <!-- Desert text -->
                 <div style="position: absolute; top: 10px; left: 10px; color: #8B4513; font-weight: bold; font-size: 0.9rem; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); letter-spacing: 1px; animation: desertTextGlow 2s infinite alternate;">🏜️ Desert</div>
+                <!-- Additional cool elements: Oasis -->
+                <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 40px; background: radial-gradient(circle, #00BFFF 20%, transparent 70%); border-radius: 50% 50% 0 0; opacity: 0.8; animation: oasisRipple 3s infinite;">
+                    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 10px; height: 20px; background: #228B22; border-radius: 5px;"></div>
+                </div>
             </div>
         `;
         // Add animations
@@ -475,6 +509,11 @@ class SilicoQuestApp {
                 40% { left: 60%; bottom: 30px; }
                 60% { left: 40%; bottom: 60px; }
                 100% { left: 40%; bottom: 60px; }
+            }
+            @keyframes oasisRipple {
+                0% { transform: scale(1); opacity: 0.8; }
+                50% { transform: scale(1.1); opacity: 1; }
+                100% { transform: scale(1); opacity: 0.8; }
             }
         `;
         document.head.appendChild(style);

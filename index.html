@@ -39,6 +39,114 @@
     50% { opacity: 1; transform: scale(1.2); }
     100% { opacity: 0.7; transform: scale(0.7); }
   }
+  /* New animations for chapters */
+  .falling-fire {
+    position: absolute;
+    top: -50px;
+    left: calc(10% + 80% * var(--rand-x));
+    font-size: 2rem;
+    opacity: 0.8;
+    animation: fall-fire 3s ease-in forwards;
+    filter: drop-shadow(0 0 6px #ff4500);
+    z-index: 1000;
+  }
+  @keyframes fall-fire {
+    0% { top: -50px; opacity: 0.8; transform: scale(0.5); }
+    100% { top: 80vh; opacity: 0; transform: scale(1.5); }
+  }
+  .rising-bubble {
+    position: absolute;
+    bottom: -50px;
+    left: calc(10% + 80% * var(--rand-x));
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #fff 30%, #00bfff 100%);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: rise-bubble 4s linear forwards;
+    z-index: 1000;
+  }
+  @keyframes rise-bubble {
+    0% { bottom: -50px; opacity: 0.6; transform: scale(0.5); }
+    100% { bottom: 80vh; opacity: 0; transform: scale(1.2); }
+  }
+  .falling-spark {
+    position: absolute;
+    top: -40px;
+    left: calc(10% + 80% * var(--rand-x));
+    font-size: 1.8rem;
+    opacity: 0.9;
+    animation: fall-spark 2s ease-out forwards;
+    filter: drop-shadow(0 0 4px #ffd700);
+    z-index: 1000;
+  }
+  @keyframes fall-spark {
+    0% { top: -40px; opacity: 0.9; }
+    100% { top: 70vh; opacity: 0; }
+  }
+  .electric-zap {
+    position: absolute;
+    top: calc(20% + 60% * var(--rand-y));
+    left: calc(10% + 80% * var(--rand-x));
+    width: 4px;
+    height: 30px;
+    background: linear-gradient(#00bfff, #1e90ff);
+    opacity: 0.7;
+    animation: zap 1s linear infinite;
+    transform: rotate(var(--rand-rot));
+    z-index: 1000;
+  }
+  @keyframes zap {
+    0% { opacity: 0.7; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+    100% { opacity: 0.7; transform: scaleY(1); }
+  }
+  .wire-connect {
+    position: absolute;
+    top: calc(20% + 60% * var(--rand-y));
+    left: calc(10% + 80% * var(--rand-x));
+    width: 40px;
+    height: 2px;
+    background: #ffd700;
+    opacity: 0.8;
+    animation: wire-flow 2s linear infinite;
+    z-index: 1000;
+  }
+  @keyframes wire-flow {
+    0% { background-position: 0 0; }
+    100% { background-position: 40px 0; }
+  }
+  .falling-code {
+    position: absolute;
+    top: -30px;
+    left: calc(10% + 80% * var(--rand-x));
+    font-size: 1.5rem;
+    opacity: 0.85;
+    animation: fall-code 3.5s linear forwards;
+    color: #00ff00;
+    filter: drop-shadow(0 0 4px #00ff00);
+    z-index: 1000;
+  }
+  @keyframes fall-code {
+    0% { top: -30px; opacity: 0.85; }
+    100% { top: 80vh; opacity: 0; }
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -50px;
+    left: calc(10% + 80% * var(--rand-x));
+    width: 15px;
+    height: 15px;
+    background: var(--confetti-color);
+    opacity: 0.9;
+    animation: fall-confetti 4s ease-in-out forwards;
+    transform: rotate(var(--rand-rot));
+    z-index: 1000;
+  }
+  @keyframes fall-confetti {
+    0% { top: -50px; opacity: 0.9; transform: rotate(0deg); }
+    100% { top: 80vh; opacity: 0; transform: rotate(720deg); }
+  }
 </style>
 <script>
 function spawnFallingCrystals() {
@@ -59,6 +167,97 @@ function spawnFallingCrystals() {
       }
       setTimeout(() => crystal.remove(), 2600);
     }, i*350);
+  }
+}
+function spawnFallingFire() {
+  for (let i = 0; i < 7; i++) {
+    setTimeout(() => {
+      const fire = document.createElement('div');
+      fire.className = 'falling-fire';
+      fire.style.setProperty('--rand-x', Math.random());
+      fire.textContent = ['🔥','🧡','💥'][Math.floor(Math.random()*3)];
+      document.body.appendChild(fire);
+      setTimeout(() => fire.remove(), 3100);
+    }, i*400);
+  }
+}
+function spawnRisingBubbles() {
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      const bubble = document.createElement('div');
+      bubble.className = 'rising-bubble';
+      bubble.style.setProperty('--rand-x', Math.random());
+      const size = Math.random()*20 + 10;
+      bubble.style.width = size + 'px';
+      bubble.style.height = size + 'px';
+      document.body.appendChild(bubble);
+      setTimeout(() => bubble.remove(), 4100);
+    }, i*300);
+  }
+}
+function spawnFallingSparks() {
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => {
+      const spark = document.createElement('div');
+      spark.className = 'falling-spark';
+      spark.style.setProperty('--rand-x', Math.random());
+      spark.textContent = ['✨','⭐','💫'][Math.floor(Math.random()*3)];
+      document.body.appendChild(spark);
+      setTimeout(() => spark.remove(), 2100);
+    }, i*300);
+  }
+}
+function spawnElectricZaps() {
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+      const zap = document.createElement('div');
+      zap.className = 'electric-zap';
+      zap.style.setProperty('--rand-x', Math.random());
+      zap.style.setProperty('--rand-y', Math.random());
+      zap.style.setProperty('--rand-rot', (Math.random()*360) + 'deg');
+      document.body.appendChild(zap);
+      setTimeout(() => zap.remove(), 1100);
+    }, i*500);
+  }
+}
+function spawnWireConnections() {
+  for (let i = 0; i < 6; i++) {
+    setTimeout(() => {
+      const wire = document.createElement('div');
+      wire.className = 'wire-connect';
+      wire.style.setProperty('--rand-x', Math.random());
+      wire.style.setProperty('--rand-y', Math.random());
+      wire.style.background = 'linear-gradient(to right, transparent, #ffd700, transparent)';
+      wire.style.backgroundSize = '200% 100%';
+      document.body.appendChild(wire);
+      setTimeout(() => wire.remove(), 2100);
+    }, i*400);
+  }
+}
+function spawnFallingCode() {
+  for (let i = 0; i < 7; i++) {
+    setTimeout(() => {
+      const code = document.createElement('div');
+      code.className = 'falling-code';
+      code.style.setProperty('--rand-x', Math.random());
+      code.textContent = ['{ }','if','for','var'][Math.floor(Math.random()*4)];
+      document.body.appendChild(code);
+      setTimeout(() => code.remove(), 3600);
+    }, i*350);
+  }
+}
+function spawnConfetti() {
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+  for (let i = 0; i < 15; i++) {
+    setTimeout(() => {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.setProperty('--rand-x', Math.random());
+      piece.style.setProperty('--confetti-color', colors[Math.floor(Math.random()*colors.length)]);
+      piece.style.setProperty('--rand-rot', (Math.random()*360) + 'deg');
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4100);
+    }, i*200);
   }
 }
 // Trigger on stage 1 load (example: call spawnFallingCrystals() when stage 1 starts)
