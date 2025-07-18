@@ -1,4 +1,4 @@
-# 🌟 SilicoQuest v3.5: The Rock That Became a Brain
+# 🌟 SilicoQuest : The Rock That Became a Brain
 
 ![SilicoQuest Banner](assets/images/silico_banner.png) *(Placeholder for banner image - add your project logo here for visual appeal)*
 
