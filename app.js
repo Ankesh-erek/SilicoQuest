@@ -1397,20 +1397,8 @@ class SilicoQuestApp {
                     <div style="position: absolute; right: 10px; top: 70%; width: 80px; height: 3px; background: linear-gradient(to left, #d69e2e, #805ad5); animation: dataBus 1.5s infinite 1.5s;"></div>
                     
                     <!-- Clock signal -->
-                    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: #ffd700; font-size: 0.8rem; text-align: center; animation: clockSignal 1s infinite;">
+                    <div style="position: absolute; top: 1px; left: 50%; transform: translateX(-50%); color: #ffd700; font-size: 0.8rem; text-align: center; animation: clockSignal 1s infinite;">
                         <div>⏰ Clock: 3.2 GHz</div>
-                        <div style="width: 40px; height: 2px; background: #ffd700; margin: 3px auto; animation: clockPulse 1s infinite;"></div>
-                    </div>
-                    
-                    <!-- Performance indicators -->
-                    <div style="position: absolute; bottom: 10px; left: 10px; color: #48bb78; font-size: 0.7rem;">
-                        <div>🚀 Instructions/sec: 3.2B</div>
-                        <div>⚡ Power: 65W</div>
-                    </div>
-                    
-                    <div style="position: absolute; bottom: 10px; right: 10px; color: #e53e3e; font-size: 0.7rem; text-align: right;">
-                        <div>🌡️ Temp: 45°C</div>
-                        <div>🔋 Efficiency: 95%</div>
                     </div>
                     
                     <!-- Activity indicators -->
@@ -1458,7 +1446,7 @@ class SilicoQuestApp {
                     </div>
                 </div>
                 
-                <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: #4a5568; font-size: 0.8rem; text-align: center;">
+                <div style="position: absolute; bottom: 200px; left: 50%; transform: translateX(-50%); color: #4a5568; font-size: 0.8rem; text-align: center;">
                     <div>📋 Basic Instruction Set</div>
                     <div style="font-size: 0.7rem; margin-top: 2px;">Commands that control the processor</div>
                 </div>
@@ -1504,7 +1492,7 @@ class SilicoQuestApp {
                     </div>
                     
                     <!-- Drag and drop hint -->
-                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: #e2e8f0; font-size: 0.8rem; text-align: center;">
+                    <div style="position: absolute; bottom: 10px; left: 200%; transform: translateX(-50%); color: #e2e8f0; font-size: 0.8rem; text-align: center;">
                         <div>🖱️ Drag & Drop Programming</div>
                         <div style="font-size: 0.7rem; margin-top: 2px;">Build programs with visual blocks</div>
                     </div>

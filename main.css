@@ -107,9 +107,12 @@ body::after {
     width: 90%;
     text-align: center;
     box-shadow: var(--shadow-heavy);
-    animation: slideUpScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     overflow: hidden;
+}
+
+.popup-content:not(.certificate-content) {
+    animation: slideUpScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .popup-content::before {
@@ -1245,8 +1248,10 @@ body::after {
     text-align: center;
     position: relative;
     overflow: hidden;
-    width: 1000px; /* Landscape width */
-    height: 650px; /* Landscape height */
+    max-width: 1000px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1000 / 650;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
@@ -1754,7 +1759,13 @@ body::after {
     }
     
     .visual-stage {
-        height: 180px;
+        min-height: 180px;
+        max-height: 40vh;
+        padding: 1rem;
+    }
+    
+    .game-area {
+        min-height: 300px;
         padding: 1rem;
     }
     
@@ -1776,6 +1787,24 @@ body::after {
         min-width: 50px;
         height: 40px;
         font-size: 0.8rem;
+    }
+    
+    .certificate {
+        padding: 1.5rem;
+        border-width: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .certificate-header h1 {
+        font-size: 2rem;
+    }
+    
+    .certificate-body h3 {
+        font-size: 2rem;
+    }
+    
+    .certificate-logo {
+        width: 80px;
     }
     
     .certificate-actions {
@@ -1807,8 +1836,14 @@ body::after {
     }
     
     .visual-stage {
-        height: 150px;
+        min-height: 150px;
+        max-height: 30vh;
         padding: 0.8rem;
+    }
+    
+    .game-area {
+        min-height: 200px;
+        padding: 0.5rem;
     }
     
     .silico-character {
@@ -1834,6 +1869,24 @@ body::after {
     .speech-bubble {
         padding: 1rem;
         font-size: 1rem;
+    }
+    
+    .certificate {
+        padding: 1rem;
+        border-width: 8px;
+        font-size: 0.8rem;
+    }
+    
+    .certificate-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .certificate-body h3 {
+        font-size: 1.5rem;
+    }
+    
+    .certificate-logo {
+        width: 60px;
     }
 }
 

@@ -15,19 +15,21 @@ class Certificate {
         style.textContent = `
             .certificate {
                 background: linear-gradient(135deg, #fdfdfd 0%, #f0f0f0 100%);
-                border: 10px double #b8860b; /* Richer gold */
-                border-radius: 20px;
-                padding: 4rem;
-                margin: 1rem;
+                border: 8px double #b8860b; /* Slightly thinner border for better fit */
+                border-radius: 15px;
+                padding: 2.5rem; /* Reduced padding for better fit */
+                margin: 0.5rem;
                 text-align: center;
                 position: relative;
                 overflow: hidden;
                 box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255,255,255,0.5);
-                min-height: 650px;
+                max-height: 580px; /* Reduced height to fit A4 landscape */
+                min-height: 580px;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
                 font-family: 'Cinzel', serif; /* Elegant, certificate-like font */
+                box-sizing: border-box;
             }
 
             .certificate::before {
@@ -268,7 +270,7 @@ class Certificate {
         const studentName = document.getElementById('studentName').textContent;
         const completionDate = document.getElementById('completionDate').textContent;
 
-        // Update certificate content with even more beautiful design
+        // Update certificate content with optimized design for A4 landscape
         this.certificateElement.innerHTML = `
             <div class="certificate-watermark">Authentic Certificate</div>
 
@@ -280,37 +282,27 @@ class Certificate {
             </div>
 
             <div class="certificate-body">
-                <p>Be it known that</p>
+                <p>This certifies that</p>
                 <h3>${studentName}</h3>
-                <p>has demonstrated exceptional dedication in completing this transformative educational journey, mastering the art and science of silicon technology.</p>
+                <p>has successfully completed the SilicoQuest journey and mastered the transformation of silicon from sand to the brain of computers.</p>
                 
                 <div class="certificate-achievement">
-                    <p><strong>Distinguished Achievements:</strong></p>
+                    <p><strong>Achievements Unlocked:</strong></p>
                     <ul>
                         <li>Silicon Mastery Award 🏆</li>
-                        <li>Expert in Chip Fabrication</li>
+                        <li>Chip Fabrication Expert</li>
                         <li>Logic Gate Architect</li>
                         <li>Digital Innovation Pioneer</li>
                     </ul>
                 </div>
 
-                <p>Acquired Knowledge:</p>
-                <ul>
-                    <li>The alchemical transformation of quartz to silicon</li>
-                    <li>Crystal cultivation and wafer artistry</li>
-                    <li>Precision photolithography and etching</li>
-                    <li>Transistor symphony and logic orchestration</li>
-                    <li>Integrated circuit masterpiece creation</li>
-                    <li>Silicon's evolution to artificial intelligence</li>
-                </ul>
-
                 <div class="certificate-date">
-                    <p>Awarded on: ${completionDate}</p>
+                    <p>Completed on: ${completionDate}</p>
                 </div>
 
-                <p class="certificate-id">Verification ID: ${this.generateCertificateId()}</p>
+                <p class="certificate-id">Certificate ID: ${this.generateCertificateId()}</p>
 
-                <p class="certificate-quote">"From humble sand to the pinnacle of innovation – your journey inspires the future."</p>
+                <p class="certificate-quote">"From humble sand to the pinnacle of innovation"</p>
             </div>
 
             <div class="certificate-footer">
@@ -328,19 +320,77 @@ class Certificate {
 
     async downloadCertificateAsPDF() {
         try {
-            // Wait a moment for the certificate to render
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // Store original styles
+            const elem = this.certificateElement;
+            const originalStyle = elem.style.cssText;
+            
+            // Set optimal dimensions for A4 landscape (297mm x 210mm)
+            // Using 3.78 pixels per mm for good quality
+            const a4LandscapeWidth = 297 * 3.78; // ~1123px
+            const a4LandscapeHeight = 210 * 3.78; // ~794px
+            
+            // Apply temporary styles for PDF generation
+            elem.style.cssText = `
+                width: ${a4LandscapeWidth}px !important;
+                height: ${a4LandscapeHeight}px !important;
+                max-height: ${a4LandscapeHeight}px !important;
+                min-height: ${a4LandscapeHeight}px !important;
+                margin: 0 !important;
+                padding: 30px !important;
+                box-sizing: border-box !important;
+                border: 6px double #b8860b !important;
+                border-radius: 10px !important;
+                overflow: hidden !important;
+                font-size: 14px !important;
+            `;
+            
+            // Adjust font sizes for better fit
+            const headers = elem.querySelectorAll('h1, h2, h3');
+            const originalFontSizes = [];
+            headers.forEach((header, index) => {
+                originalFontSizes[index] = header.style.fontSize;
+                if (header.tagName === 'H1') {
+                    header.style.fontSize = '2.2rem !important';
+                } else if (header.tagName === 'H2') {
+                    header.style.fontSize = '1.6rem !important';
+                } else if (header.tagName === 'H3') {
+                    header.style.fontSize = '2.2rem !important';
+                }
+            });
+            
+            // Adjust spacing for achievement section
+            const achievement = elem.querySelector('.certificate-achievement');
+            if (achievement) {
+                achievement.style.margin = '1rem 0 !important';
+                achievement.style.padding = '1rem !important';
+            }
+            
+            // Adjust body content spacing
+            const body = elem.querySelector('.certificate-body');
+            if (body) {
+                body.style.padding = '1rem 0 !important';
+                const paragraphs = body.querySelectorAll('p');
+                paragraphs.forEach(p => {
+                    p.style.margin = '0.8rem 0 !important';
+                    p.style.fontSize = '1.1rem !important';
+                });
+            }
+            
+            // Wait for styles to apply
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-            // Use html2canvas to capture the certificate
-            const canvas = await html2canvas(this.certificateElement, {
-                scale: 4, // Higher resolution for better print quality
+            // Capture with html2canvas
+            const canvas = await html2canvas(elem, {
+                scale: 2, // High quality
                 useCORS: true,
                 backgroundColor: '#ffffff',
-                width: this.certificateElement.offsetWidth,
-                height: this.certificateElement.offsetHeight
+                width: a4LandscapeWidth,
+                height: a4LandscapeHeight,
+                scrollX: 0,
+                scrollY: 0
             });
 
-            // Create PDF using jsPDF
+            // Create PDF
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
                 orientation: 'landscape',
@@ -348,21 +398,17 @@ class Certificate {
                 format: 'a4'
             });
 
-            // Calculate dimensions to fit the page
-            const imgWidth = 297; // A4 landscape width in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            // Add the image to PDF
+            // Add image to PDF with exact A4 landscape dimensions
             pdf.addImage(
-                canvas.toDataURL('image/png'),
+                canvas.toDataURL('image/png', 1.0),
                 'PNG',
                 0,
-                (210 - imgHeight) / 2, // Center vertically
-                imgWidth,
-                imgHeight
+                0,
+                297, // A4 landscape width in mm
+                210  // A4 landscape height in mm
             );
 
-            // Generate filename with student name and date
+            // Generate filename
             const studentName = document.getElementById('studentName').textContent;
             const date = new Date().toISOString().split('T')[0];
             const filename = `SilicoQuest_Certificate_${studentName.replace(/\s+/g, '_')}_${date}.pdf`;
@@ -370,11 +416,20 @@ class Certificate {
             // Download the PDF
             pdf.save(filename);
 
+            // Restore original styles
+            elem.style.cssText = originalStyle;
+            headers.forEach((header, index) => {
+                header.style.fontSize = originalFontSizes[index];
+            });
+
             // Show success message
             this.showDownloadSuccess();
 
         } catch (error) {
             console.error('Failed to generate certificate:', error);
+            // Restore original styles in case of error
+            const elem = this.certificateElement;
+            elem.style.cssText = '';
             this.showDownloadError();
         }
     }
@@ -416,23 +471,31 @@ class Certificate {
     }
 
     getCertificateCSS() {
-        // Return the certificate CSS for printing
+        // Return optimized certificate CSS for printing in A4 landscape
         return `
+            @page {
+                size: A4 landscape;
+                margin: 0.5in;
+            }
+            
             .certificate {
                 background: linear-gradient(135deg, #fdfdfd 0%, #f0f0f0 100%);
-                border: 10px double #b8860b;
-                border-radius: 20px;
-                padding: 3rem;
+                border: 8px double #b8860b;
+                border-radius: 15px;
+                padding: 2rem;
                 text-align: center;
                 position: relative;
                 overflow: hidden;
-                width: 1000px;
-                height: 700px;
+                width: 100%;
+                max-width: 10in;
+                height: 7in;
                 margin: 0 auto;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
+                justify-content: space-between;
                 box-shadow: none;
+                box-sizing: border-box;
+                font-family: 'Cinzel', serif;
             }
 
             .certificate-watermark {
@@ -440,48 +503,145 @@ class Certificate {
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%) rotate(-45deg);
-                font-size: 6rem;
+                font-size: 4rem;
                 color: rgba(184, 134, 11, 0.08);
                 font-weight: bold;
                 text-transform: uppercase;
-                letter-spacing: 10px;
+                letter-spacing: 8px;
             }
 
             .certificate-logo {
-                width: 150px;
+                width: 100px;
                 height: auto;
-                margin: 0 auto 1.5rem;
+                margin: 0 auto 1rem;
                 display: block;
                 border: 2px solid #b8860b;
                 border-radius: 50%;
-                padding: 10px;
+                padding: 8px;
                 background: white;
             }
 
             .certificate-header h1 {
                 color: #001f3f;
-                font-size: 3rem;
-                margin-bottom: 0.5rem;
+                font-size: 2.2rem;
+                margin-bottom: 0.3rem;
                 letter-spacing: 2px;
                 text-transform: uppercase;
             }
             
             .certificate-header h2 {
                 color: #4a5568;
-                font-size: 2rem;
-                margin-bottom: 2rem;
+                font-size: 1.6rem;
+                margin-bottom: 1.5rem;
                 font-style: italic;
+            }
+            
+            .certificate-body {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 1rem 0;
+            }
+            
+            .certificate-body p {
+                color: #333333;
+                font-size: 1.1rem;
+                margin: 0.5rem 0;
+                line-height: 1.4;
             }
             
             .certificate-body h3 {
                 color: #001f3f;
-                font-size: 2.8rem;
-                margin: 1.5rem 0;
+                font-size: 2.2rem;
+                margin: 1rem 0;
                 border-bottom: 3px solid #b8860b;
-                padding-bottom: 0.7rem;
+                padding-bottom: 0.5rem;
+                font-weight: 700;
             }
 
-            /* Add other styles as needed for print */
+            .certificate-achievement {
+                background: rgba(184, 134, 11, 0.1);
+                border-radius: 10px;
+                padding: 1rem;
+                margin: 1rem 0;
+                border: 1px dashed #b8860b;
+            }
+
+            .certificate-achievement ul {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .certificate-achievement li {
+                margin: 0.4rem 0;
+                color: #001f3f;
+                font-size: 1rem;
+                position: relative;
+                padding-left: 20px;
+            }
+
+            .certificate-achievement li::before {
+                content: '★';
+                position: absolute;
+                left: 0;
+                color: #b8860b;
+            }
+
+            .certificate-date {
+                margin: 1rem 0;
+                font-size: 1.1rem;
+                color: #001f3f;
+                font-style: italic;
+                background: rgba(184, 134, 11, 0.05);
+                padding: 0.4rem;
+                border-radius: 5px;
+            }
+
+            .certificate-id {
+                font-size: 0.9rem;
+                color: #666666;
+                margin: 0.5rem 0;
+                font-style: italic;
+            }
+
+            .certificate-quote {
+                font-style: italic;
+                color: #4a5568;
+                font-size: 1rem;
+                margin: 1rem 0;
+                padding: 0.8rem;
+                border-left: 4px solid #b8860b;
+                background: rgba(184, 134, 11, 0.05);
+            }
+
+            .certificate-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 1.5rem;
+                border-top: 3px double #b8860b;
+                padding-top: 1rem;
+            }
+
+            .certificate-signature {
+                text-align: left;
+            }
+
+            .certificate-signature p {
+                color: #001f3f;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 0.2rem 0;
+                font-style: italic;
+            }
+
+            .certificate-seal {
+                width: 80px;
+                height: auto;
+                opacity: 0.9;
+            }
         `;
     }
 
