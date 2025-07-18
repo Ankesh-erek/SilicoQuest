@@ -1711,7 +1711,41 @@ body::after {
     }
 }
 
-/* Responsive Design */
+/* Global responsive styles */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Tablet responsive */
+@media (max-width: 1024px) {
+    .app-container {
+        padding: 1rem;
+    }
+    
+    .chapter-container {
+        padding: 1.5rem;
+    }
+    
+    .chapter-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .visual-stage {
+        min-height: 250px;
+    }
+    
+    .game-area {
+        min-height: 400px;
+    }
+    
+    .nav-btn {
+        padding: 0.9rem 1.8rem;
+        font-size: 1.05rem;
+    }
+}
+
+/* Mobile responsive */
 @media (max-width: 768px) {
     .app-container {
         padding: 0.5rem;
@@ -1758,6 +1792,11 @@ body::after {
         align-self: center;
     }
     
+    .silico-narrator .speech-bubble {
+        max-width: 100%;
+        margin-top: 1rem;
+    }
+    
     .visual-stage {
         min-height: 180px;
         max-height: 40vh;
@@ -1777,6 +1816,7 @@ body::after {
     .nav-btn {
         padding: 0.8rem 1.5rem;
         font-size: 1rem;
+        width: 100%;
     }
     
     .chapter-indicators {
@@ -1793,6 +1833,13 @@ body::after {
         padding: 1.5rem;
         border-width: 10px;
         font-size: 0.9rem;
+        aspect-ratio: auto;
+        height: auto;
+    }
+    
+    .certificate-header {
+        flex-direction: column;
+        gap: 1rem;
     }
     
     .certificate-header h1 {
@@ -1854,6 +1901,7 @@ body::after {
     .nav-btn {
         padding: 0.7rem 1.2rem;
         font-size: 0.9rem;
+        width: 100%;
     }
     
     .chapter-indicator {
