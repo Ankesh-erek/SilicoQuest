@@ -1,6 +1,7 @@
 # 🌟 SilicoQuest : The Rock That Became a Brain
 
-![SilicoQuest Banner](assets/images/large.png) *(Placeholder for banner image - add your project logo here for visual appeal)*
+![SilicoQuest Banner](assets/images/large.png) 
+
 
 An interactive, educational web application designed for students (Class 8-12) to explore semiconductor fabrication and computer science through captivating storytelling, dynamic animations, and fun mini-games. Now enhanced in v3.5 with comprehensive fixes, improved responsiveness, and robust functionality for a seamless learning experience!
 
