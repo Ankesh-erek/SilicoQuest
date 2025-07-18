@@ -203,6 +203,13 @@ class SilicoQuestApp {
 
         // Load first narration stage
         this.loadNarrationStage(chapter.narration[0]);
+        // Only scroll to top for non-game stages and on mobile
+        if (window.innerWidth <= 768) {
+          const gameArea = document.getElementById('gameArea');
+          if (!gameArea || gameArea.style.display === 'none') {
+            window.scrollTo(0, 0);
+          }
+        }
         
         // Trigger chapter-specific animation
         setTimeout(() => {
@@ -270,6 +277,13 @@ class SilicoQuestApp {
             setTimeout(() => {
                 this.silicoCharacter.animate('idle');
             }, narrationData.duration);
+        }
+        // Only scroll to top for non-game stages and on mobile
+        if (window.innerWidth <= 768) {
+          const gameArea = document.getElementById('gameArea');
+          if (!gameArea || gameArea.style.display === 'none') {
+            window.scrollTo(0, 0);
+          }
         }
     }
 
